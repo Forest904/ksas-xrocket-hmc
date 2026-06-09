@@ -135,6 +135,8 @@ The roadmap is implementation-facing. It defines what to build first, what evide
 
 ## M2: Preprocessing, Manifests, Grouped Splits, and Baseline Models
 
+**Status:** Complete as of 2026-06-09.
+
 **Objective:** Produce reproducible model-ready tensors and leakage-safe baseline results before integrating XROCKET.
 
 **Ordered checklist:**
@@ -165,8 +167,24 @@ The roadmap is implementation-facing. It defines what to build first, what evide
 
 **Blocking decisions:**
 
-- Choose the sequence-length strategy required for the first model: pad, truncate, resample, or use an implementation that accepts unequal lengths.
-- Decide whether no-movement is included in the primary classification target or treated as a separate sensitivity analysis, based on class balance and assignment fit.
+- Resolved: use right-padding to 56 samples for the primary M2 tensor, preserving raw sample spacing while saving original lengths and valid masks.
+- Resolved: include no movement as label `0` in the primary six-class classification target.
+
+**Completed outputs:**
+
+- Added `hmc prepare` to build manifest-backed tensors and grouped split manifests from `data/manifests/samples.csv`.
+- Added `hmc baseline` to train majority, masked statistical logistic-regression, and masked statistical random-forest baselines on the saved grouped folds.
+- Added M2 configs: `configs/preprocessing_m2_raw_padded.yaml` and `configs/baseline_m2_raw_padded.yaml`.
+- Generated `data/processed/ksas_m2_raw_padded/` with `tensors.npz`, metadata, tensor contract, resolved config, and provenance.
+- Generated `data/manifests/splits/` with grouped fold membership, fold diagnostics, and split summary.
+- Generated `results/baselines/m2_raw_padded/` with fold metrics, aggregate metrics, predictions, confusion matrices, model artifacts, resolved config, and provenance.
+- Hardened preprocessing with raw CSV checksum validation and clearer malformed-CSV errors.
+- Hardened baseline training with split-manifest-to-tensor alignment checks, label-position-safe metrics, and probability mapping by estimator class labels.
+- Verified tensor shape `(240, 18, 56)`, 18 audited channels, six labels, and manifest-preserved sample order.
+- Verified every grouped test fold has 48 samples, four held-out participants, eight samples per class, complete class coverage, and zero train-test participant overlap.
+- Baseline aggregate macro F1: majority `0.0476`, statistical logistic regression `0.8861`, statistical random forest `0.9092`.
+- Added M2 tests for manifest validation, checksum enforcement, CSV parsing errors, channel ordering, tensor shape, padding masks, grouped split safety, stale split detection, class/probability mapping, config precedence, and baseline smoke outputs.
+- Verified `uv run ruff check .`, `uv run ruff format --check .`, `uv run mypy src`, and `uv run pytest` pass with 24 tests.
 
 ## M3: XROCKET Integration and Metadata Traceability
 

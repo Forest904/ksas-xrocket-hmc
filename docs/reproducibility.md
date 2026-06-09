@@ -18,4 +18,14 @@ Raw KSAS data must remain immutable and untracked. Local raw files belong under 
 
 ## Workflow
 
-The M0 workflow commands exist as documented placeholders. Later milestones will replace them with real data, modeling, explanation, and report steps.
+The M2 preprocessing and baseline workflow is:
+
+```bash
+uv run hmc prepare --config configs/preprocessing_m2_raw_padded.yaml
+uv run hmc baseline --config configs/baseline_m2_raw_padded.yaml
+```
+
+`hmc prepare` writes padded tensors and participant-grouped split manifests.
+`hmc baseline` trains the majority, statistical logistic-regression, and
+statistical random-forest baselines on those exact folds. Both commands save
+resolved configs and provenance for the generated artifacts.

@@ -1,0 +1,13 @@
+processed_dir: data/processed/ksas_m2_raw_padded
+splits_dir: data/manifests/splits
+output_dir: results/baselines/m2_raw_padded
+target: movement_label_id
+classes: [0, 1, 2, 3, 4, 5]
+feature_source: raw_padded_tensor
+feature_statistics: [mean, std, min, max, median, q25, q75]
+mask_policy: ignore_padded_timesteps
+models:
+  - majority
+  - statistical_logistic_regression
+  - statistical_random_forest
+random_state: 42

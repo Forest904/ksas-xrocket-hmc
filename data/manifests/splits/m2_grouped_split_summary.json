@@ -1,0 +1,295 @@
+{
+  "folds": [
+    {
+      "absent_test_classes": [],
+      "absent_train_classes": [],
+      "fold": 0,
+      "participant_overlap": [],
+      "participant_overlap_count": 0,
+      "test_arm_counts": {
+        "d": 24,
+        "i": 24
+      },
+      "test_class_counts": {
+        "0": 8,
+        "1": 8,
+        "2": 8,
+        "3": 8,
+        "4": 8,
+        "5": 8
+      },
+      "test_participants": [
+        "P01",
+        "P06",
+        "P13",
+        "P14"
+      ],
+      "test_sample_count": 48,
+      "train_arm_counts": {
+        "d": 96,
+        "i": 96
+      },
+      "train_class_counts": {
+        "0": 32,
+        "1": 32,
+        "2": 32,
+        "3": 32,
+        "4": 32,
+        "5": 32
+      },
+      "train_participants": [
+        "P02",
+        "P03",
+        "P04",
+        "P05",
+        "P07",
+        "P08",
+        "P09",
+        "P10",
+        "P11",
+        "P12",
+        "P15",
+        "P16",
+        "P17",
+        "P18",
+        "P19",
+        "P20"
+      ],
+      "train_sample_count": 192
+    },
+    {
+      "absent_test_classes": [],
+      "absent_train_classes": [],
+      "fold": 1,
+      "participant_overlap": [],
+      "participant_overlap_count": 0,
+      "test_arm_counts": {
+        "d": 24,
+        "i": 24
+      },
+      "test_class_counts": {
+        "0": 8,
+        "1": 8,
+        "2": 8,
+        "3": 8,
+        "4": 8,
+        "5": 8
+      },
+      "test_participants": [
+        "P08",
+        "P10",
+        "P12",
+        "P16"
+      ],
+      "test_sample_count": 48,
+      "train_arm_counts": {
+        "d": 96,
+        "i": 96
+      },
+      "train_class_counts": {
+        "0": 32,
+        "1": 32,
+        "2": 32,
+        "3": 32,
+        "4": 32,
+        "5": 32
+      },
+      "train_participants": [
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P05",
+        "P06",
+        "P07",
+        "P09",
+        "P11",
+        "P13",
+        "P14",
+        "P15",
+        "P17",
+        "P18",
+        "P19",
+        "P20"
+      ],
+      "train_sample_count": 192
+    },
+    {
+      "absent_test_classes": [],
+      "absent_train_classes": [],
+      "fold": 2,
+      "participant_overlap": [],
+      "participant_overlap_count": 0,
+      "test_arm_counts": {
+        "d": 24,
+        "i": 24
+      },
+      "test_class_counts": {
+        "0": 8,
+        "1": 8,
+        "2": 8,
+        "3": 8,
+        "4": 8,
+        "5": 8
+      },
+      "test_participants": [
+        "P02",
+        "P04",
+        "P11",
+        "P20"
+      ],
+      "test_sample_count": 48,
+      "train_arm_counts": {
+        "d": 96,
+        "i": 96
+      },
+      "train_class_counts": {
+        "0": 32,
+        "1": 32,
+        "2": 32,
+        "3": 32,
+        "4": 32,
+        "5": 32
+      },
+      "train_participants": [
+        "P01",
+        "P03",
+        "P05",
+        "P06",
+        "P07",
+        "P08",
+        "P09",
+        "P10",
+        "P12",
+        "P13",
+        "P14",
+        "P15",
+        "P16",
+        "P17",
+        "P18",
+        "P19"
+      ],
+      "train_sample_count": 192
+    },
+    {
+      "absent_test_classes": [],
+      "absent_train_classes": [],
+      "fold": 3,
+      "participant_overlap": [],
+      "participant_overlap_count": 0,
+      "test_arm_counts": {
+        "d": 24,
+        "i": 24
+      },
+      "test_class_counts": {
+        "0": 8,
+        "1": 8,
+        "2": 8,
+        "3": 8,
+        "4": 8,
+        "5": 8
+      },
+      "test_participants": [
+        "P05",
+        "P15",
+        "P18",
+        "P19"
+      ],
+      "test_sample_count": 48,
+      "train_arm_counts": {
+        "d": 96,
+        "i": 96
+      },
+      "train_class_counts": {
+        "0": 32,
+        "1": 32,
+        "2": 32,
+        "3": 32,
+        "4": 32,
+        "5": 32
+      },
+      "train_participants": [
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P06",
+        "P07",
+        "P08",
+        "P09",
+        "P10",
+        "P11",
+        "P12",
+        "P13",
+        "P14",
+        "P16",
+        "P17",
+        "P20"
+      ],
+      "train_sample_count": 192
+    },
+    {
+      "absent_test_classes": [],
+      "absent_train_classes": [],
+      "fold": 4,
+      "participant_overlap": [],
+      "participant_overlap_count": 0,
+      "test_arm_counts": {
+        "d": 24,
+        "i": 24
+      },
+      "test_class_counts": {
+        "0": 8,
+        "1": 8,
+        "2": 8,
+        "3": 8,
+        "4": 8,
+        "5": 8
+      },
+      "test_participants": [
+        "P03",
+        "P07",
+        "P09",
+        "P17"
+      ],
+      "test_sample_count": 48,
+      "train_arm_counts": {
+        "d": 96,
+        "i": 96
+      },
+      "train_class_counts": {
+        "0": 32,
+        "1": 32,
+        "2": 32,
+        "3": 32,
+        "4": 32,
+        "5": 32
+      },
+      "train_participants": [
+        "P01",
+        "P02",
+        "P04",
+        "P05",
+        "P06",
+        "P08",
+        "P10",
+        "P11",
+        "P12",
+        "P13",
+        "P14",
+        "P15",
+        "P16",
+        "P18",
+        "P19",
+        "P20"
+      ],
+      "train_sample_count": 192
+    }
+  ],
+  "group_field": "split_group",
+  "n_splits": 5,
+  "participant_overlap_assertion": "passed",
+  "random_state": 42,
+  "splitter": "StratifiedGroupKFold",
+  "target_field": "movement_label_id"
+}

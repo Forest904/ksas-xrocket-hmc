@@ -1,0 +1,15 @@
+{
+  "derived_channels": "none",
+  "length_strategy": "right_pad_with_zeros",
+  "manifest_path": "data/manifests/samples.csv",
+  "manifest_sha256": "bb2d97142e6bb128e7814709ec5c3b66fb96d0a2976551427965fcebddbc0303",
+  "metadata_path": "data/processed/ksas_m2_raw_padded/metadata.csv",
+  "normalization": "none",
+  "primary_target": "six_class_movement_label_id",
+  "raw_file_count": 240,
+  "raw_inputs_sha256": "9237199ec1d5720a9c894ba9a2ee3ac63c7fb19b6ff49ce147e680705e431827",
+  "resolved_config_path": "data/processed/ksas_m2_raw_padded/resolved_config.json",
+  "smoothing": "none",
+  "target_length": 56,
+  "tensor_path": "data/processed/ksas_m2_raw_padded/tensors.npz"
+}

@@ -1,0 +1,26 @@
+{
+  "classes": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "environment": {
+    "packages": {
+      "joblib": "1.5.3",
+      "numpy": "2.4.6",
+      "scikit-learn": "1.9.0"
+    },
+    "platform": "Windows-10-10.0.26200-SP0",
+    "python": "3.11.8"
+  },
+  "git_commit": "028954a12fab10ecf4a26fb5ce5c45da0d62f1b0",
+  "output_dir": "results/baselines/m2_raw_padded",
+  "processed_dir": "data/processed/ksas_m2_raw_padded",
+  "random_state": 42,
+  "split_manifest_sha256": "5596f3494e154ee60d9be455e3fc7783804d01afa996fca2c045c1538af408d7",
+  "splits_dir": "data/manifests/splits",
+  "tensor_sha256": "27598490ed9b086d40a17f483c509a65b97d821289e048e5cabf7a848cda88ef"
+}

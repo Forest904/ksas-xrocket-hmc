@@ -1,0 +1,20 @@
+dataset: ksas
+manifest: data/manifests/samples.csv
+output_dir: data/processed/ksas_m2_raw_padded
+target: movement_label_id
+classes: [0, 1, 2, 3, 4, 5]
+channels: all_raw_imu
+tensor_axis_order: [sample, channel, time]
+length_strategy: right_pad_with_zeros
+target_length: 56
+padding_value: 0.0
+normalization: none
+smoothing: none
+derived_channels: none
+splits:
+  output_dir: data/manifests/splits
+  type: stratified_group_k_fold
+  group: split_group
+  n_splits: 5
+  shuffle: true
+  random_state: 42

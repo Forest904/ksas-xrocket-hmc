@@ -1,0 +1,59 @@
+{
+  "axis_order": [
+    "sample",
+    "channel",
+    "time"
+  ],
+  "channels": [
+    "accelerometer_x",
+    "accelerometer_y",
+    "accelerometer_z",
+    "gravity_x",
+    "gravity_y",
+    "gravity_z",
+    "gyros_x",
+    "gyros_y",
+    "gyros_z",
+    "lin_accel_x",
+    "lin_accel_y",
+    "lin_accel_z",
+    "game_rot_vec_x",
+    "game_rot_vec_y",
+    "game_rot_vec_z",
+    "magn_field_x",
+    "magn_field_y",
+    "magn_field_z"
+  ],
+  "classes": {
+    "0": "no movement",
+    "1": "upward block",
+    "2": "hammering inward block",
+    "3": "extended outward block",
+    "4": "outward downward block",
+    "5": "rear elbow block"
+  },
+  "dtype": "float32",
+  "group_field": "participant_id",
+  "label_field": "movement_label_id",
+  "metadata_fields": [
+    "sample_id",
+    "participant_id",
+    "arm_code",
+    "original_length"
+  ],
+  "padding": {
+    "side": "right",
+    "valid_mask_shape": [
+      240,
+      56
+    ],
+    "value": 0.0
+  },
+  "sample_order": "data/manifests/samples.csv row order",
+  "shape": [
+    240,
+    18,
+    56
+  ],
+  "target_length": 56
+}

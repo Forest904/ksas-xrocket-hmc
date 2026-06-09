@@ -1,0 +1,34 @@
+{
+  "channels": "all_raw_imu",
+  "classes": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "config": "configs/preprocessing_m2_raw_padded.yaml",
+  "derived_channels": "none",
+  "length_strategy": "right_pad_with_zeros",
+  "manifest": "data/manifests/samples.csv",
+  "normalization": "none",
+  "output_dir": "data/processed/ksas_m2_raw_padded",
+  "padding_value": 0.0,
+  "smoothing": "none",
+  "splits": {
+    "group": "split_group",
+    "n_splits": 5,
+    "output_dir": "data/manifests/splits",
+    "random_state": 42,
+    "shuffle": true,
+    "type": "stratified_group_k_fold"
+  },
+  "target": "movement_label_id",
+  "target_length": 56,
+  "tensor_axis_order": [
+    "sample",
+    "channel",
+    "time"
+  ]
+}

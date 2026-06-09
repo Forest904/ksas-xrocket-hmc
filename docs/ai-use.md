@@ -8,4 +8,4 @@ Maintain this log throughout the project whenever generative-AI assistance is us
 
 ## Initial Disclosure Template
 
-Generative-AI tools were used to support repository planning, software implementation, debugging, test design, and language editing. All generated code and prose retained in the project were reviewed, executed, tested, and revised by the author. Raw participant data and personally identifying information were not supplied to generative-AI tools.
+Generative-AI tools were used to support repository planning, software implementation, debugging, test design, and language editing. All generated code and prose retained in the project were reviewed, executed, tested, and revised by me the author Luca Foresti. Raw participant data and personally identifying information were not supplied to generative-AI tools.
