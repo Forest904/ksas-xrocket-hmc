@@ -216,3 +216,7 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+
+#Custom ignore rules can be added below
+KSAS-Dataset
