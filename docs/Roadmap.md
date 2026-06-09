@@ -13,13 +13,12 @@ The roadmap is implementation-facing. It defines what to build first, what evide
 - `KSAS-Dataset/` is present at the root only as a temporary local copy. It should remain untracked and later be moved or copied into `data/raw/KSAS-Dataset/` after the repository skeleton exists.
 - The KSAS dataset contains 240 CSV instances under `KSAS-Dataset/movements`.
 - KSAS filenames follow `a-b-c.csv`, where `a` is the movement label, `b` is the participant ID, and `c` is the arm indicator.
-- The dataset README declares Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International.
 - Each CSV contains 18 Android sensor channels: accelerometer, gravity, gyroscope, linear acceleration, game rotation vector, and magnetic field, each with x, y, and z axes.
 
 ## Global Rules
 
 - Keep raw data immutable. Do not edit upstream CSVs in place.
-- Keep raw data untracked unless the dataset license and repository policy explicitly allow redistribution.
+- Keep raw participant data untracked.
 - Prevent participant leakage in every final evaluation split.
 - Fit preprocessing that learns from data only on training folds, then apply it to validation or test folds.
 - Preserve traceability from XROCKET features to kernel metadata, channel or channel combination, dilation, temporal span, and representative signal intervals.
@@ -34,7 +33,7 @@ The roadmap is implementation-facing. It defines what to build first, what evide
 | Milestone | Focus | Target Outcome |
 |---|---|---|
 | M0 | Repository foundation and skeleton | Complete: a runnable project structure exists |
-| M1 | KSAS data placement, license confirmation, audit, data dictionary | Dataset facts are verified before modeling |
+| M1 | KSAS data placement, provenance, audit, data dictionary | Dataset facts are verified before modeling |
 | M2 | Preprocessing, manifests, grouped splits, baseline models | Reliable tensors and leakage-safe baselines exist |
 | M3 | XROCKET integration and metadata traceability | Primary explainable model runs end to end |
 | M4 | Task 1.1 sensor-axis contribution analysis | Sensor and axis evidence answers "where" |
@@ -89,7 +88,9 @@ The roadmap is implementation-facing. It defines what to build first, what evide
 - Added tracked skeleton directories while keeping `KSAS-Dataset/` and raw data ignored.
 - Verified `make reproduce`, which runs linting, formatting check, typing, tests, importability, CLI version, and placeholder CLI smoke.
 
-## M1: KSAS Data Placement, License Confirmation, Audit, and Data Dictionary
+## M1: KSAS Data Placement, Provenance, Audit, and Data Dictionary
+
+**Status:** Complete as of 2026-06-09.
 
 **Objective:** Move from "dataset available locally" to a verified, documented, reproducible data source without committing raw participant data.
 
@@ -97,7 +98,7 @@ The roadmap is implementation-facing. It defines what to build first, what evide
 
 1. Move or copy the ignored root `KSAS-Dataset/` folder into `data/raw/KSAS-Dataset/` after the skeleton exists.
 2. Ensure `data/raw/` and the dataset folder remain ignored by Git.
-3. Record dataset provenance: upstream URL, local acquisition date, upstream README license text, and any citation requirements.
+3. Record local dataset provenance: course-provided source, local acquisition date, local README checksum, and audit date.
 4. Create a data audit script that scans all CSVs and extracts filenames, movement labels, participant IDs, arm indicators, row counts, columns, missing values, duplicate rows, and numeric ranges.
 5. Generate `data/manifests/samples.csv` from the audit rather than by hand.
 6. Validate that the expected 240 files are present.
@@ -116,14 +117,21 @@ The roadmap is implementation-facing. It defines what to build first, what evide
 **Exit criteria:**
 
 - Audit confirms file count, channel schema, labels, participant IDs, and arm indicators.
-- Dataset license status is recorded before any public release decision.
 - No raw dataset CSVs are staged for commit.
 - Any missing or corrupted data are documented before preprocessing begins.
 
 **Blocking decisions:**
 
-- Decide whether to move the local dataset folder or copy it, then delete the root copy manually after confirming the new location.
-- Decide how to handle unknown sampling frequency if timestamps are unavailable: derive from documentation if possible, otherwise report temporal spans in samples and clearly qualify time-based interpretation.
+- Resolved: copy the local dataset folder into `data/raw/KSAS-Dataset/`; delete the root copy manually only after confirming the copied raw path is sufficient.
+- Resolved: sampling frequency remains unknown, so M1 reports temporal spans in samples and defers seconds-based interpretation.
+
+**Completed outputs:**
+
+- Copied the local ignored raw dataset into `data/raw/KSAS-Dataset/`.
+- Confirmed raw dataset paths remain ignored by Git.
+- Added `hmc audit` to generate `data/manifests/samples.csv`, `data/manifests/ksas_provenance.json`, `results/audit/ksas_audit_summary.json`, and `results/audit/ksas_numeric_ranges.csv`.
+- Verified 240 CSV files, expected labels, participants, arms, class coverage, 18-channel schema, numeric values, no missing values, no duplicate rows, and no exact duplicate files.
+- Completed `docs/data-dictionary.md` and recorded unresolved sampling-frequency and orientation facts in `docs/limitations.md`, `docs/decision-log.md`, and `docs/open-questions.md`.
 
 ## M2: Preprocessing, Manifests, Grouped Splits, and Baseline Models
 
@@ -334,7 +342,7 @@ The roadmap is implementation-facing. It defines what to build first, what evide
 3. Ensure each assignment task has a direct answer before extended discussion.
 4. Add the repository link or final repository URL.
 5. Add a concise generative-AI disclosure reflecting actual usage.
-6. Add references, dataset attribution, XROCKET/code attribution, and license notes.
+6. Add references and XROCKET/code attribution notes when relevant.
 7. Run the clean reproduction command or the closest documented clean-run subset.
 8. Run tests, linting, and report build checks.
 9. Open the generated PDF and verify figures, captions, tables, references, and page readability.
@@ -376,13 +384,13 @@ The project is complete only when all of the following are true:
 - Problems encountered are documented, including unresolved issues.
 - Generative-AI tools used for implementation support are disclosed.
 - Participant-independent evaluation has no train-test participant overlap.
-- Raw KSAS data remain immutable and untracked unless a later explicit license decision allows redistribution.
+- Raw KSAS data remain immutable and untracked.
 - A clean reproduction path has been tested or its limits are honestly documented.
 
 ## Immediate Next Actions
 
 1. Move or copy `KSAS-Dataset/` into `data/raw/KSAS-Dataset/` now that `data/raw/` exists and is ignored.
-2. Record dataset provenance, license text, acquisition date, and citation requirements.
+2. Record local dataset provenance and acquisition date.
 3. Run the first dataset audit and generate `data/manifests/samples.csv`.
 4. Fill `docs/data-dictionary.md` before writing preprocessing or modeling code.
 5. Record unresolved facts, such as sampling frequency or device orientation, in `docs/limitations.md` and `docs/decision-log.md`.

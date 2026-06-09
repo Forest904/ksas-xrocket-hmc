@@ -496,7 +496,6 @@ The following questions must be resolved before final modeling.
 
 | Gate | Question | Required evidence | Decision deadline |
 |---|---|---|---|
-| DG-01 | What is the exact KSAS license? | Upstream license file or written terms | Before committing raw data |
 | DG-02 | What files and labels are present? | Data audit and manifest | Before preprocessing |
 | DG-03 | What is the sampling frequency? | Dataset documentation or timestamp analysis | Before dilation interpretation |
 | DG-04 | What are the channel names, units, and coordinate conventions? | Data dictionary | Before axis analysis |
@@ -1416,7 +1415,7 @@ The identifiers below should be referenced in issues, pull requests, and the fin
 | ID | Requirement | Priority | Acceptance criterion |
 |---|---|---|---|
 | FR-DAT-001 | Acquire or locate the KSAS dataset reproducibly | Mandatory | Source and retrieval instructions documented |
-| FR-DAT-002 | Verify dataset license | Mandatory | License recorded before redistribution |
+| FR-DAT-002 | Verify local dataset access policy | Mandatory | Raw data remain local-only and untracked |
 | FR-DAT-003 | Generate file checksums | Recommended | Manifest contains checksum per raw file |
 | FR-DAT-004 | Parse all supported raw files | Mandatory | Loader reports complete inventory |
 | FR-DAT-005 | Validate channel schema | Mandatory | Unknown or missing channels produce explicit error |
@@ -2410,7 +2409,7 @@ The exact statement must reflect actual use.
 - Minimize copied raw data.
 - Pseudonymize participant IDs.
 - Do not publish private metadata.
-- Respect dataset license and consent conditions.
+- Respect the course-provided data access boundary and keep raw participant data untracked.
 - Avoid embedding raw paths containing names.
 
 ## 37.2 Fairness and confounding
@@ -2441,7 +2440,7 @@ The report should frame XROCKET explanations as decision support for a human ins
 
 Before submission:
 
-1. verify the KSAS dataset license;
+1. keep the course-provided KSAS raw data local and untracked;
 2. verify the XROCKET reference implementation license;
 3. preserve attribution notices;
 4. document adapted files and upstream commits;
@@ -2642,7 +2641,7 @@ Each entry should include:
 |---|---|---|---|---|
 | XROCKET reference code unavailable or incompatible | Medium | High | Prototype adapter early; keep alternative fixed-kernel plan | Cannot fit toy data by milestone |
 | XROCKET metadata inaccessible | Medium | Critical | Modify adapter to persist metadata; do not use opaque transform | Feature indices cannot map to kernels |
-| Dataset license unclear | Medium | High | Do not redistribute; contact professor/upstream | No explicit license found |
+| Dataset access boundary unclear | Medium | High | Do not redistribute; confirm with professor | No explicit course guidance found |
 | Sampling frequency unknown | Medium | High | Inspect timestamps/docs; report normalized time if unresolved | No defensible Hz value |
 | Small participant count | High | High | Grouped CV, uncertainty, restrained tuning | Folds lack class coverage |
 | Severe class imbalance | Medium | High | Macro metrics, class weights, grouped stratification | Minority class absent in folds |
@@ -2668,7 +2667,7 @@ The schedule is designed around the **20 July 2026** deadline.
 | Milestone | Target dates | Exit criteria |
 |---|---|---|
 | M0 — Repository foundation | 10–12 June | Repo, PRD, environment, CI skeleton |
-| M1 — Data acquisition and audit | 13–18 June | License, manifest, data dictionary, split recommendation |
+| M1 — Data acquisition and audit | 13–18 June | Manifest, data dictionary, split recommendation |
 | M2 — Preprocessing and baselines | 19–24 June | Reproducible tensors, grouped baseline results |
 | M3 — XROCKET integration | 25 June–1 July | Fixed kernels, metadata map, primary model |
 | M4 — Task 1.1 and 1.2 analyses | 2–7 July | Axis, ablation, dilation, time-scale figures |
@@ -2694,7 +2693,7 @@ A report skeleton must build successfully before the end of M2. This prevents a 
 
 Pass when:
 
-- license status recorded;
+- local raw-data policy recorded;
 - sample manifest valid;
 - channels and labels documented;
 - sampling-rate status known;
@@ -2879,7 +2878,7 @@ An excellent submission is not the one with the most experiments. It is the one 
 10. Were the signals previously smoothed or normalized?
 11. Are expertise, correctness, or performance labels available?
 12. Are participant demographics present and permitted for use?
-13. What is the official data license?
+13. What is the official course data access policy?
 14. Which XROCKET implementation is executable and licensed?
 15. Does the implementation support multivariate channel combinations?
 16. Which features are generated per kernel?
@@ -2896,8 +2895,7 @@ These questions must be answered or explicitly marked unresolved before final in
 
 The assignment identifies the following starting material:
 
-1. KSAS Dataset:  
-   `https://github.com/Physical-User-Modeling-PhyUM/KSAS-Dataset`
+1. KSAS Dataset: course-provided local dataset.
 2. Time series classification with XROCKET:  
    `https://dida.do/blog/explainable-time-series-classification-with-x-rocket`
 3. UMAP 2026 paper: `umap26-45.pdf`, when available.

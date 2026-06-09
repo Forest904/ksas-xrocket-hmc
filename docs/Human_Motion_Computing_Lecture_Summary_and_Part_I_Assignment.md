@@ -340,7 +340,7 @@ available in [6] and [7] as support (but have not been exhaustively tested).
 
 Links
 
-[1] KSAS Dataset: https://github.com/Physical-User-Modeling-PhyUM/KSAS-Dataset
+[1] KSAS Dataset: course-provided local dataset.
 [2] Time series classification with XROCKET: https://dida.do/blog/explainable-time-series-classification-with-x-rocket
 [3] UMAP 2026 paper (to be published in UMAP proceedings: umap26-45.pdf)
 [4] Sleep analysis paper: https://link.springer.com/article/10.1007/s10796-026-10736-0

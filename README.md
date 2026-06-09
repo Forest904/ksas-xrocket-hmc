@@ -27,13 +27,11 @@ The final deliverable is a reproducible technical report supported by code, expe
 
 ## Dataset
 
-The project uses the **KSAS Dataset**, containing smartphone inertial data recorded during American Kenpo Karate Blocking Set I.
+The project uses the **KSAS Dataset**, a course-provided local dataset containing
+smartphone inertial data recorded during American Kenpo Karate Blocking Set I.
 
-Dataset repository:
-
-- [Physical-User-Modeling-PhyUM/KSAS-Dataset](https://github.com/Physical-User-Modeling-PhyUM/KSAS-Dataset)
-
-Raw data are not included by default. Data access, licensing, channels, labels, sampling frequency, and participant metadata must be verified during the audit stage.
+Raw data are not included by default. Data access, channels, labels, sampling
+frequency, and participant metadata must be verified during the audit stage.
 
 Expected layout:
 
@@ -217,13 +215,6 @@ Model importance indicates association, not biomechanical causation. Smartphone 
 
 ## References
 
-- [KSAS Dataset](https://github.com/Physical-User-Modeling-PhyUM/KSAS-Dataset)
 - [XROCKET overview](https://dida.do/blog/explainable-time-series-classification-with-x-rocket)
-- [EADS reference repository](https://github.com/Physical-User-Modeling-PhyUM/EADS)
-- [UMAP26_SP1 reference repository](https://github.com/Physical-User-Modeling-PhyUM/UMAP26_SP1)
 
 ---
-
-## License
-
-The final repository license will be selected after verifying the licenses of the KSAS dataset and any reused XROCKET or PhyUM code.

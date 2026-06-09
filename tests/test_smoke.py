@@ -19,7 +19,17 @@ def test_cli_version_exits_successfully(capsys) -> None:  # type: ignore[no-unty
     assert __version__ in captured.out
 
 
-def test_placeholder_command_returns_deferred_message(capsys) -> None:  # type: ignore[no-untyped-def]
+def test_audit_command_exposes_real_options(capsys) -> None:  # type: ignore[no-untyped-def]
+    with pytest.raises(SystemExit) as exc_info:
+        main(["audit", "--help"])
+
+    captured = capsys.readouterr()
+    assert exc_info.value.code == 0
+    assert "--raw-dir" in captured.out
+    assert "--manifest" in captured.out
+
+
+def test_future_placeholder_command_returns_deferred_message(capsys) -> None:  # type: ignore[no-untyped-def]
     exit_code = main(["prepare"])
 
     captured = capsys.readouterr()

@@ -1,0 +1,103 @@
+{
+  "arms": {
+    "d": {
+      "count": 120,
+      "label": "right"
+    },
+    "i": {
+      "count": 120,
+      "label": "left"
+    }
+  },
+  "audit_timestamp_utc": "2026-06-09T18:31:17+00:00",
+  "channels": [
+    "accelerometer_x",
+    "accelerometer_y",
+    "accelerometer_z",
+    "gravity_x",
+    "gravity_y",
+    "gravity_z",
+    "gyros_x",
+    "gyros_y",
+    "gyros_z",
+    "lin_accel_x",
+    "lin_accel_y",
+    "lin_accel_z",
+    "game_rot_vec_x",
+    "game_rot_vec_y",
+    "game_rot_vec_z",
+    "magn_field_x",
+    "magn_field_y",
+    "magn_field_z"
+  ],
+  "class_counts": {
+    "0": 40,
+    "1": 40,
+    "2": 40,
+    "3": 40,
+    "4": 40,
+    "5": 40
+  },
+  "csv_file_count": 240,
+  "duplicate_file_checksum_groups": [],
+  "duplicate_participant_arm_label_combinations": [],
+  "duplicate_rows_total": 0,
+  "errors": [],
+  "expected_file_count": 240,
+  "expected_labels": {
+    "0": "no movement",
+    "1": "upward block",
+    "2": "hammering inward block",
+    "3": "extended outward block",
+    "4": "outward downward block",
+    "5": "rear elbow block"
+  },
+  "manifest_path": "data/manifests/samples.csv",
+  "missing_participant_arm_label_combinations": [],
+  "missing_values_total": 0,
+  "non_numeric_files": [],
+  "numeric_ranges_path": "results/audit/ksas_numeric_ranges.csv",
+  "participant_arm_groups": 40,
+  "participants": {
+    "expected_count": 20,
+    "ids": [
+      "P01",
+      "P02",
+      "P03",
+      "P04",
+      "P05",
+      "P06",
+      "P07",
+      "P08",
+      "P09",
+      "P10",
+      "P11",
+      "P12",
+      "P13",
+      "P14",
+      "P15",
+      "P16",
+      "P17",
+      "P18",
+      "P19",
+      "P20"
+    ],
+    "observed_count": 20
+  },
+  "raw_dir": "data/raw/KSAS-Dataset",
+  "sensor_units": {
+    "accelerometer": "m/s^2",
+    "game_rot_vec": "unitless",
+    "gravity": "m/s^2",
+    "gyros": "rad/s",
+    "lin_accel": "m/s^2",
+    "magn_field": "microtesla"
+  },
+  "sequence_length_samples": {
+    "max": 56,
+    "median": 33.0,
+    "min": 18
+  },
+  "validation_status": "passed",
+  "wrong_width_files": []
+}

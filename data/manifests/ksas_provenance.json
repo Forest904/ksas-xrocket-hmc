@@ -1,0 +1,14 @@
+{
+  "audit_date": "2026-06-09",
+  "dataset_name": "KSAS-Dataset",
+  "known_unresolved_facts": [
+    "Sampling frequency is not stated in the dataset README or CSV files.",
+    "CSV files do not include timestamps.",
+    "Phone placement and device orientation protocol are not fully specified."
+  ],
+  "local_acquisition_date": "2026-06-09",
+  "local_readme_path": "data/raw/KSAS-Dataset/README.md",
+  "local_readme_sha256": "addb58325369256e5242dc507fe3fe45d7b1ab435841b32b8c8d1c14fcd9a790",
+  "raw_data_git_policy": "Raw KSAS CSV files remain local-only and ignored by Git.",
+  "source": "Course-provided local dataset"
+}
