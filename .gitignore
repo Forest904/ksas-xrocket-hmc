@@ -220,3 +220,7 @@ __marimo__/
 
 #Custom ignore rules can be added below
 KSAS-Dataset
+
+# Project data policy
+data/raw/*
+!data/raw/.gitkeep

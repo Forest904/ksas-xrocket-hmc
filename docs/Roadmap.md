@@ -8,8 +8,8 @@ The roadmap is implementation-facing. It defines what to build first, what evide
 
 ## Current Starting State
 
-- The root currently contains `README.md`, `AGENT.md`, `.gitignore`, `docs/`, and an ignored upstream `KSAS-Dataset/` folder.
-- Long-form documentation lives in `docs/`, including `PRD.md`, `Roadmap.md`, and `Human_Motion_Computing_Lecture_Summary_and_Part_I_Assignment.md`.
+- The root contains the M0 repository skeleton: `pyproject.toml`, `uv.lock`, `Makefile`, `.github/workflows/ci.yml`, `src/ksas_xrocket/`, `tests/`, `configs/`, `data/`, `notebooks/`, `reports/`, `results/`, and `scripts/`.
+- Long-form documentation lives in `docs/`, including `PRD.md`, `Roadmap.md`, `Human_Motion_Computing_Lecture_Summary_and_Part_I_Assignment.md`, M0 placeholder documentation files, and `docs/ai-use.md`.
 - `KSAS-Dataset/` is present at the root only as a temporary local copy. It should remain untracked and later be moved or copied into `data/raw/KSAS-Dataset/` after the repository skeleton exists.
 - The KSAS dataset contains 240 CSV instances under `KSAS-Dataset/movements`.
 - KSAS filenames follow `a-b-c.csv`, where `a` is the movement label, `b` is the participant ID, and `c` is the arm indicator.
@@ -33,7 +33,7 @@ The roadmap is implementation-facing. It defines what to build first, what evide
 
 | Milestone | Focus | Target Outcome |
 |---|---|---|
-| M0 | Repository foundation and skeleton | A runnable project structure exists |
+| M0 | Repository foundation and skeleton | Complete: a runnable project structure exists |
 | M1 | KSAS data placement, license confirmation, audit, data dictionary | Dataset facts are verified before modeling |
 | M2 | Preprocessing, manifests, grouped splits, baseline models | Reliable tensors and leakage-safe baselines exist |
 | M3 | XROCKET integration and metadata traceability | Primary explainable model runs end to end |
@@ -44,6 +44,8 @@ The roadmap is implementation-facing. It defines what to build first, what evide
 | M8 | Report generation, reproduction check, final submission | PDF and repository are submission-ready |
 
 ## M0: Repository Foundation and Skeleton
+
+**Status:** Complete as of 2026-06-09.
 
 **Objective:** Create the project skeleton promised by the README without starting model work too early.
 
@@ -67,15 +69,25 @@ The roadmap is implementation-facing. It defines what to build first, what evide
 
 **Exit criteria:**
 
-- `uv sync` or the chosen environment setup command succeeds.
-- `uv run pytest` runs at least one smoke test.
-- `uv run ruff check .` succeeds or has a documented initial baseline.
-- README commands map to real scripts or documented placeholders.
+- Complete: `uv sync --locked` succeeds using Python 3.11.
+- Complete: `uv run pytest` runs the M0 smoke tests.
+- Complete: `uv run ruff check .`, `uv run ruff format --check .`, and `uv run mypy src` succeed.
+- Complete: README `make` commands exist and map to documented placeholders or real quality checks.
 
 **Blocking decisions:**
 
-- Confirm whether the project uses `pyproject.toml` plus `uv.lock` as the canonical environment lock.
-- Confirm whether CI should run full tests only, or also a tiny data-free pipeline smoke test.
+- Resolved: `pyproject.toml` plus committed `uv.lock` is the canonical environment lock.
+- Resolved: CI runs data-free lint, format, type, test, importability, version, and placeholder CLI smoke checks.
+
+**Completed outputs:**
+
+- Added `pyproject.toml`, `uv.lock`, `Makefile`, `.pre-commit-config.yaml`, and `.github/workflows/ci.yml`.
+- Added an importable package under `src/ksas_xrocket` with the `hmc` console entrypoint.
+- Added successful placeholder CLI commands for `prepare`, `audit`, `baseline`, `train`, `explain`, `figures`, `report`, and `reproduce`.
+- Added smoke tests in `tests/` for importability, version metadata, and placeholder CLI behavior.
+- Added required documentation placeholders plus `docs/ai-use.md`.
+- Added tracked skeleton directories while keeping `KSAS-Dataset/` and raw data ignored.
+- Verified `make reproduce`, which runs linting, formatting check, typing, tests, importability, CLI version, and placeholder CLI smoke.
 
 ## M1: KSAS Data Placement, License Confirmation, Audit, and Data Dictionary
 
@@ -369,8 +381,8 @@ The project is complete only when all of the following are true:
 
 ## Immediate Next Actions
 
-1. Create the repository skeleton from M0.
-2. Add environment, package, task runner, and smoke tests.
-3. Move or copy `KSAS-Dataset/` into `data/raw/KSAS-Dataset/` only after `data/raw/` exists and is ignored.
-4. Run the first dataset audit and generate `data/manifests/samples.csv`.
-5. Fill `docs/data-dictionary.md` before writing preprocessing or modeling code.
+1. Move or copy `KSAS-Dataset/` into `data/raw/KSAS-Dataset/` now that `data/raw/` exists and is ignored.
+2. Record dataset provenance, license text, acquisition date, and citation requirements.
+3. Run the first dataset audit and generate `data/manifests/samples.csv`.
+4. Fill `docs/data-dictionary.md` before writing preprocessing or modeling code.
+5. Record unresolved facts, such as sampling frequency or device orientation, in `docs/limitations.md` and `docs/decision-log.md`.
