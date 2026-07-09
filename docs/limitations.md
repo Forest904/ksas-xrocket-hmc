@@ -62,3 +62,23 @@ M4 Task 1.1 limitations:
 - All biomechanical interpretation remains device-frame based. No anatomical
   coordinate transform, participant-specific phone placement check, or
   arm-orientation calibration is available.
+
+M5 Task 1.2 limitations:
+
+- Dilation is interpreted as effective temporal span, not Fourier frequency.
+  Labels such as short-duration/high-frequency-like and
+  long-duration/low-frequency-like are descriptive analogies.
+- Spans in seconds are approximate nominal-50-Hz conversions. Because Android
+  event timestamps were not retained, realized sampling rate, jitter, and
+  cross-sensor timing cannot be verified.
+- Temporal-scale rankings describe the saved padded M3 XROCKET representation.
+  They inherit the padding sensitivity documented in M3 rather than proving
+  that the same dilation profile would hold for a mask-aware or resampled
+  representation.
+- The short/intermediate/long bins are defined from the finite 56-sample
+  receptive-field mapping before inspecting final importance rankings. They
+  are appropriate for this padded model but should be redefined if a later
+  representation changes sequence length or available dilations.
+- Class-specific temporal-scale profiles are one-vs-rest random-forest
+  diagnostics fitted on transformed features. They are secondary evidence, not
+  native class-specific explanations from the original multiclass model.

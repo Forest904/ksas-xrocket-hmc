@@ -323,6 +323,8 @@ The roadmap is implementation-facing. It defines what to build first, what evide
 
 ## M5: Task 1.2 Dilations/Frequencies and Temporal-Scale Analysis
 
+**Status:** Complete as of 2026-07-09.
+
 **Objective:** Answer Task 1.2: whether classification relies on short-duration, long-duration, or mixed temporal patterns.
 
 **Ordered checklist:**
@@ -357,7 +359,28 @@ The roadmap is implementation-facing. It defines what to build first, what evide
 - Resolved: describe dilation as temporal span, not Fourier frequency. Use
   "short-duration/high-frequency-like" and
   "long-duration/low-frequency-like"; report samples first and approximate
-  seconds at nominal 50 Hz second.
+  seconds at nominal 50 Hz.
+
+**Completed outputs:**
+
+- Added `hmc explain` support for Task 1.2 and
+  `configs/explanations/task_1_2_xrocket_raw_padded.yaml`.
+- Generated temporal-span mapping, normalized dilation and scale-bin
+  importance tables, important-feature tables, class-specific temporal
+  profiles, fold-stability tables, padding temporal diagnostics, figures,
+  provenance, and a report-ready answer under
+  `results/explanations/task_1_2/`.
+- Validated every temporal feature claim against saved XROCKET metadata:
+  dilation, kernel length, and effective receptive-field samples.
+- Predefined bins from the 56-sample padded window: short spans 9-17 samples,
+  intermediate spans 25-33 samples, and long spans 41-49 samples.
+- Classified the saved padded XROCKET representation as long-scale evidence:
+  long spans contributed `0.6545` mean normalized importance, intermediate
+  spans `0.2237`, and short spans `0.1218`.
+- Added Task 1.2 tests for span conversion, binning, classification,
+  aggregation, metadata validation, CLI smoke outputs, and figure creation.
+- Updated `docs/methodology.md`, `docs/reproducibility.md`,
+  `docs/limitations.md`, and `docs/biomechanics.md`.
 
 ## M6: Task 1.3 Discriminative-Pattern Interpretation
 

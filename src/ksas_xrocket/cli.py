@@ -22,6 +22,11 @@ from ksas_xrocket.task_1_1_explain import (
     Task11ExplanationError,
     run_task_1_1_explanation,
 )
+from ksas_xrocket.task_1_2_explain import (
+    BIN_RULE_DESCRIPTION,
+    Task12ExplanationError,
+    run_task_1_2_explanation,
+)
 from ksas_xrocket.xrocket_adapter import XRocketAdapterError
 from ksas_xrocket.xrocket_experiment import XRocketExperimentError, run_xrocket_experiment
 
@@ -31,6 +36,7 @@ DEFAULT_SPLITS_DIR = Path("data/manifests/splits")
 DEFAULT_BASELINE_DIR = Path("results/baselines/m2_raw_padded")
 DEFAULT_XROCKET_DIR = Path("results/xrocket/m3_raw_padded")
 DEFAULT_TASK_1_1_DIR = Path("results/explanations/task_1_1")
+DEFAULT_TASK_1_2_DIR = Path("results/explanations/task_1_2")
 
 _PLACEHOLDERS = {
     "figures": "M4-M8 report figure generation",
@@ -495,11 +501,12 @@ def main(argv: Sequence[str] | None = None) -> int:
         try:
             config = load_yaml_config(args.config)
             task_name = str(config.get("task", "task_1_1"))
-            if task_name != "task_1_1":
+            if task_name not in {"task_1_1", "task_1_2"}:
                 raise ConfigError(f"Unsupported explanation task: {task_name}")
             validation_config = nested_mapping(config, "validation")
             models_config = nested_mapping(config, "models")
             rf_config = nested_mapping(models_config, "random_forest")
+            temporal_config = nested_mapping(config, "temporal")
             processed_dir = args.processed_dir or path_config_value(
                 config,
                 "processed_dir",
@@ -513,7 +520,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             output_dir = args.output_dir or path_config_value(
                 config,
                 "output_dir",
-                DEFAULT_TASK_1_1_DIR,
+                DEFAULT_TASK_1_2_DIR if task_name == "task_1_2" else DEFAULT_TASK_1_1_DIR,
             )
             random_state = (
                 args.random_state
@@ -528,6 +535,58 @@ def main(argv: Sequence[str] | None = None) -> int:
                 5,
             )
             top_k = int_config_value(validation_config, "top_k", 3)
+            if task_name == "task_1_2":
+                target_length = int_config_value(temporal_config, "target_length", 56)
+                nominal_sampling_rate_hz = float(
+                    temporal_config.get("nominal_sampling_rate_hz", 50.0)
+                )
+                resolved_config = {
+                    "config": args.config.as_posix() if args.config is not None else None,
+                    "task": task_name,
+                    "processed_dir": processed_dir.as_posix(),
+                    "xrocket_dir": xrocket_dir.as_posix(),
+                    "output_dir": output_dir.as_posix(),
+                    "classes": list(label_ids),
+                    "random_state": random_state,
+                    "validation": {
+                        "group_levels": ["dilation", "temporal_scale_bin"],
+                        "top_k": top_k,
+                    },
+                    "temporal": {
+                        "target_length": target_length,
+                        "nominal_sampling_rate_hz": nominal_sampling_rate_hz,
+                        "bin_rule": BIN_RULE_DESCRIPTION,
+                    },
+                    "models": {
+                        "random_forest": {
+                            "n_estimators": random_forest_estimators,
+                            "class_weight": "balanced",
+                            "max_features": "sqrt",
+                            "n_jobs": -1,
+                        }
+                    },
+                }
+                task12_result = run_task_1_2_explanation(
+                    processed_dir=processed_dir,
+                    xrocket_dir=xrocket_dir,
+                    output_dir=output_dir,
+                    label_ids=label_ids,
+                    random_state=random_state,
+                    random_forest_estimators=random_forest_estimators,
+                    top_k=top_k,
+                    target_length=target_length,
+                    nominal_sampling_rate_hz=nominal_sampling_rate_hz,
+                    overwrite=args.overwrite,
+                    resolved_config=resolved_config,
+                )
+                print("Task 1.2 explanation analysis completed.")
+                print(f"Feature importance: {task12_result.feature_importance_path}")
+                print(f"Important features: {task12_result.important_features_path}")
+                print(f"Dilation summary: {task12_result.dilation_summary_path}")
+                print(f"Temporal-scale summary: {task12_result.temporal_scale_summary_path}")
+                print(f"Answer draft: {task12_result.answer_path}")
+                print(f"Provenance: {task12_result.provenance_path}")
+                return 0
             resolved_config = {
                 "config": args.config.as_posix() if args.config is not None else None,
                 "task": task_name,
@@ -553,7 +612,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                     }
                 },
             }
-            explanation_result = run_task_1_1_explanation(
+            task11_result = run_task_1_1_explanation(
                 processed_dir=processed_dir,
                 xrocket_dir=xrocket_dir,
                 output_dir=output_dir,
@@ -565,17 +624,24 @@ def main(argv: Sequence[str] | None = None) -> int:
                 overwrite=args.overwrite,
                 resolved_config=resolved_config,
             )
-        except (ConfigError, BaselineError, Task11ExplanationError, TypeError, ValueError) as exc:
+        except (
+            ConfigError,
+            BaselineError,
+            Task11ExplanationError,
+            Task12ExplanationError,
+            TypeError,
+            ValueError,
+        ) as exc:
             print(str(exc))
             return 1
 
         print("Task 1.1 explanation analysis completed.")
-        print(f"Native importance: {explanation_result.native_importance_path}")
-        print(f"Ablation metrics: {explanation_result.ablation_path}")
-        print(f"Permutation importance: {explanation_result.permutation_path}")
-        print(f"Method agreement: {explanation_result.method_agreement_path}")
-        print(f"Answer draft: {explanation_result.answer_path}")
-        print(f"Provenance: {explanation_result.provenance_path}")
+        print(f"Native importance: {task11_result.native_importance_path}")
+        print(f"Ablation metrics: {task11_result.ablation_path}")
+        print(f"Permutation importance: {task11_result.permutation_path}")
+        print(f"Method agreement: {task11_result.method_agreement_path}")
+        print(f"Answer draft: {task11_result.answer_path}")
+        print(f"Provenance: {task11_result.provenance_path}")
         return 0
 
     milestone = _PLACEHOLDERS[args.command]

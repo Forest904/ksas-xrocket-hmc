@@ -1,0 +1,7 @@
+dilation,kernel_length,effective_receptive_field_samples,effective_receptive_field_seconds_nominal,temporal_scale_bin,relative_span_of_padded_window,target_length_samples,nominal_sampling_rate_hz,temporal_bin_rule
+1,9,9,0.18,short,0.16071428571428573,56,50.0,short: span/target_length <= 1/3; intermediate: 1/3 < span/target_length <= 2/3; long: span/target_length > 2/3
+2,9,17,0.34,short,0.30357142857142855,56,50.0,short: span/target_length <= 1/3; intermediate: 1/3 < span/target_length <= 2/3; long: span/target_length > 2/3
+3,9,25,0.5,intermediate,0.44642857142857145,56,50.0,short: span/target_length <= 1/3; intermediate: 1/3 < span/target_length <= 2/3; long: span/target_length > 2/3
+4,9,33,0.66,intermediate,0.5892857142857143,56,50.0,short: span/target_length <= 1/3; intermediate: 1/3 < span/target_length <= 2/3; long: span/target_length > 2/3
+5,9,41,0.82,long,0.7321428571428571,56,50.0,short: span/target_length <= 1/3; intermediate: 1/3 < span/target_length <= 2/3; long: span/target_length > 2/3
+6,9,49,0.98,long,0.875,56,50.0,short: span/target_length <= 1/3; intermediate: 1/3 < span/target_length <= 2/3; long: span/target_length > 2/3

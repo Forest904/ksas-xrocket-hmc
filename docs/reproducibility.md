@@ -35,6 +35,7 @@ uv run hmc prepare --config configs/preprocessing_m2_raw_padded.yaml
 uv run hmc baseline --config configs/baseline_m2_raw_padded.yaml
 uv run hmc train --config configs/experiments/m3_xrocket_raw_padded.yaml
 uv run hmc explain --config configs/explanations/task_1_1_xrocket_raw_padded.yaml
+uv run hmc explain --config configs/explanations/task_1_2_xrocket_raw_padded.yaml
 ```
 
 `hmc prepare` writes padded tensors and participant-grouped split manifests.
@@ -44,12 +45,17 @@ metadata, models, metrics, predictions, confusion matrices, runtime, provenance,
 and padding diagnostics. It refuses to replace a non-empty output directory
 unless `--overwrite` is passed explicitly.
 
-`hmc explain` currently implements Task 1.1 for the M3 raw-padded XROCKET run.
-It reads the saved M3 fold artifacts, computes normalized native importance,
-class-specific one-vs-rest profiles, feature-group ablations, grouped
-permutation importance, method-agreement tables, figures, and a report-ready
-answer under `results/explanations/task_1_1/`. It also refuses to replace a
-non-empty output directory unless `--overwrite` is passed explicitly.
+`hmc explain` implements Task 1.1 and Task 1.2 for the M3 raw-padded XROCKET
+run. Task 1.1 reads the saved M3 fold artifacts, computes normalized native
+importance, class-specific one-vs-rest profiles, feature-group ablations,
+grouped permutation importance, method-agreement tables, figures, and a
+report-ready answer under `results/explanations/task_1_1/`. Task 1.2 reads the
+same fold artifacts, validates dilation and receptive-field metadata,
+aggregates normalized native importance by dilation and temporal-scale bin,
+computes class-specific temporal profiles, writes figures, and drafts the
+temporal-scale answer under `results/explanations/task_1_2/`. Explanation
+commands refuse to replace a non-empty output directory unless `--overwrite` is
+passed explicitly.
 
 Each M3 fold directory contains the fitted adapter and classifiers. The runner
 reloads them before completing and verifies that features and smoke-sample
@@ -69,3 +75,20 @@ The primary Task 1.1 artifacts are:
 - `results/explanations/task_1_1/task_1_1_answer.md`;
 - `results/explanations/task_1_1/resolved_config.json`;
 - `results/explanations/task_1_1/provenance.json`.
+
+## M5 Task 1.2 Outputs
+
+The primary Task 1.2 artifacts are:
+
+- `results/explanations/task_1_2/temporal_span_mapping.csv`;
+- `results/explanations/task_1_2/fold_temporal_feature_importance.parquet`;
+- `results/explanations/task_1_2/important_temporal_features.parquet`;
+- `results/explanations/task_1_2/dilation_*_importance.csv`;
+- `results/explanations/task_1_2/temporal_scale_*_importance.csv`;
+- `results/explanations/task_1_2/class_specific_*_importance.csv`;
+- `results/explanations/task_1_2/stability_*.csv`;
+- `results/explanations/task_1_2/padding_temporal_diagnostics.csv`;
+- `results/explanations/task_1_2/figures/*.{png,pdf}`;
+- `results/explanations/task_1_2/task_1_2_answer.md`;
+- `results/explanations/task_1_2/resolved_config.json`;
+- `results/explanations/task_1_2/provenance.json`.

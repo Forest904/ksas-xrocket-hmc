@@ -69,3 +69,26 @@ random forest is retrained. The safest biomechanical statement is therefore:
 gravity and related orientation/rotation channels are consistently associated
 with classification, while ablation does not prove that any single raw sensor
 family is strictly necessary.
+
+## M5 Task 1.2 Interpretation
+
+The M5 temporal-scale evidence is stored in
+`results/explanations/task_1_2/`. It classifies the saved padded XROCKET
+representation as long-scale: long receptive fields contribute `0.6545` mean
+normalized native importance, compared with `0.2237` for intermediate spans
+and `0.1218` for short spans. The strongest dilations are 6 and 5, with
+effective spans of 49 and 41 samples, approximately 0.98 and 0.82 seconds at
+nominal 50 Hz.
+
+Biomechanically, this suggests that the classifier relies more on movement
+structure across much of each short KSAS execution than on isolated local
+sample-to-sample events. Plausible human-motion correlates include the overall
+block trajectory, transition timing, orientation evolution, and end-position
+organization. This should still be phrased as a device-signal interpretation:
+dilations identify temporal span in the transformed XROCKET representation,
+not a directly validated motor-control timescale.
+
+Short spans are not absent; they retain about `0.1218` normalized importance.
+However, the dominant evidence is long-duration/low-frequency-like in the
+padded model. The approximate seconds should be treated only as nominal
+context because the dataset does not retain measured Android sensor timing.

@@ -1,0 +1,16 @@
+fold,group_level,group_value,importance
+0,temporal_scale_bin,short,0.12852968389341413
+0,temporal_scale_bin,intermediate,0.21390196183458918
+0,temporal_scale_bin,long,0.6575683542719967
+1,temporal_scale_bin,short,0.11417852603804678
+1,temporal_scale_bin,intermediate,0.21397957238969037
+1,temporal_scale_bin,long,0.6718419015722629
+2,temporal_scale_bin,short,0.11761114314449617
+2,temporal_scale_bin,intermediate,0.22999213749518052
+2,temporal_scale_bin,long,0.6523967193603233
+3,temporal_scale_bin,short,0.12265675690944029
+3,temporal_scale_bin,intermediate,0.22695527950195293
+3,temporal_scale_bin,long,0.6503879635886067
+4,temporal_scale_bin,short,0.12592689761440692
+4,temporal_scale_bin,intermediate,0.23372365175111903
+4,temporal_scale_bin,long,0.640349450634474

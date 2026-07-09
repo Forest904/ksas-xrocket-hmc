@@ -1,0 +1,26 @@
+task: task_1_2
+experiment: task_1_2_xrocket_raw_padded
+processed_dir: data/processed/ksas_m2_raw_padded
+xrocket_dir: results/xrocket/m3_raw_padded
+output_dir: results/explanations/task_1_2
+classes: [0, 1, 2, 3, 4, 5]
+random_state: 42
+
+temporal:
+  target_length: 56
+  nominal_sampling_rate_hz: 50.0
+  bin_rule: "short: span/target_length <= 1/3; intermediate: 1/3 < span/target_length <= 2/3; long: span/target_length > 2/3"
+
+validation:
+  group_levels: [dilation, temporal_scale_bin]
+  top_k: 2
+
+class_specific:
+  enabled: true
+
+models:
+  random_forest:
+    n_estimators: 500
+    class_weight: balanced
+    max_features: sqrt
+    n_jobs: -1
