@@ -27,6 +27,10 @@ from ksas_xrocket.task_1_2_explain import (
     Task12ExplanationError,
     run_task_1_2_explanation,
 )
+from ksas_xrocket.task_1_3_explain import (
+    Task13ExplanationError,
+    run_task_1_3_explanation,
+)
 from ksas_xrocket.xrocket_adapter import XRocketAdapterError
 from ksas_xrocket.xrocket_experiment import XRocketExperimentError, run_xrocket_experiment
 
@@ -37,6 +41,7 @@ DEFAULT_BASELINE_DIR = Path("results/baselines/m2_raw_padded")
 DEFAULT_XROCKET_DIR = Path("results/xrocket/m3_raw_padded")
 DEFAULT_TASK_1_1_DIR = Path("results/explanations/task_1_1")
 DEFAULT_TASK_1_2_DIR = Path("results/explanations/task_1_2")
+DEFAULT_TASK_1_3_DIR = Path("results/explanations/task_1_3")
 
 _PLACEHOLDERS = {
     "figures": "M4-M8 report figure generation",
@@ -501,12 +506,13 @@ def main(argv: Sequence[str] | None = None) -> int:
         try:
             config = load_yaml_config(args.config)
             task_name = str(config.get("task", "task_1_1"))
-            if task_name not in {"task_1_1", "task_1_2"}:
+            if task_name not in {"task_1_1", "task_1_2", "task_1_3"}:
                 raise ConfigError(f"Unsupported explanation task: {task_name}")
             validation_config = nested_mapping(config, "validation")
             models_config = nested_mapping(config, "models")
             rf_config = nested_mapping(models_config, "random_forest")
             temporal_config = nested_mapping(config, "temporal")
+            patterns_config = nested_mapping(config, "patterns")
             processed_dir = args.processed_dir or path_config_value(
                 config,
                 "processed_dir",
@@ -520,7 +526,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             output_dir = args.output_dir or path_config_value(
                 config,
                 "output_dir",
-                DEFAULT_TASK_1_2_DIR if task_name == "task_1_2" else DEFAULT_TASK_1_1_DIR,
+                default_explanation_dir(task_name),
             )
             random_state = (
                 args.random_state
@@ -587,6 +593,66 @@ def main(argv: Sequence[str] | None = None) -> int:
                 print(f"Answer draft: {task12_result.answer_path}")
                 print(f"Provenance: {task12_result.provenance_path}")
                 return 0
+            if task_name == "task_1_3":
+                target_length = int_config_value(patterns_config, "target_length", 56)
+                nominal_sampling_rate_hz = float(
+                    patterns_config.get("nominal_sampling_rate_hz", 50.0)
+                )
+                stable_candidate_count = int_config_value(
+                    patterns_config,
+                    "stable_candidate_count",
+                    12,
+                )
+                correct_case_count = int_config_value(patterns_config, "correct_case_count", 3)
+                include_failure_case = bool(patterns_config.get("include_failure_case", True))
+                primary_model = str(patterns_config.get("primary_model", "xrocket_random_forest"))
+                resolved_config = {
+                    "config": args.config.as_posix() if args.config is not None else None,
+                    "task": task_name,
+                    "processed_dir": processed_dir.as_posix(),
+                    "xrocket_dir": xrocket_dir.as_posix(),
+                    "output_dir": output_dir.as_posix(),
+                    "classes": list(label_ids),
+                    "patterns": {
+                        "stable_candidate_count": stable_candidate_count,
+                        "correct_case_count": correct_case_count,
+                        "include_failure_case": include_failure_case,
+                        "target_length": target_length,
+                        "nominal_sampling_rate_hz": nominal_sampling_rate_hz,
+                        "primary_model": primary_model,
+                        "localization": "strongest representative PPV response interval",
+                    },
+                    "models": {
+                        "random_forest": {
+                            "n_estimators": random_forest_estimators,
+                            "class_weight": "balanced",
+                            "max_features": "sqrt",
+                            "n_jobs": -1,
+                        }
+                    },
+                }
+                task13_result = run_task_1_3_explanation(
+                    processed_dir=processed_dir,
+                    xrocket_dir=xrocket_dir,
+                    output_dir=output_dir,
+                    label_ids=label_ids,
+                    stable_candidate_count=stable_candidate_count,
+                    correct_case_count=correct_case_count,
+                    include_failure_case=include_failure_case,
+                    target_length=target_length,
+                    nominal_sampling_rate_hz=nominal_sampling_rate_hz,
+                    primary_model=primary_model,
+                    overwrite=args.overwrite,
+                    resolved_config=resolved_config,
+                )
+                print("Task 1.3 explanation analysis completed.")
+                print(f"Selected patterns: {task13_result.selected_patterns_path}")
+                print(f"Pattern cases: {task13_result.pattern_cases_path}")
+                print(f"Response traces: {task13_result.response_traces_path}")
+                print(f"Feature distributions: {task13_result.feature_distributions_path}")
+                print(f"Answer draft: {task13_result.answer_path}")
+                print(f"Provenance: {task13_result.provenance_path}")
+                return 0
             resolved_config = {
                 "config": args.config.as_posix() if args.config is not None else None,
                 "task": task_name,
@@ -629,6 +695,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             BaselineError,
             Task11ExplanationError,
             Task12ExplanationError,
+            Task13ExplanationError,
             TypeError,
             ValueError,
         ) as exc:
@@ -677,6 +744,15 @@ def folds_from_config(
     if len(set(folds)) != len(folds) or any(fold < 0 for fold in folds):
         raise ConfigError("Config field 'folds' must contain unique non-negative integers")
     return folds
+
+
+def default_explanation_dir(task_name: str) -> Path:
+    """Return the default output directory for an explanation task."""
+    if task_name == "task_1_2":
+        return DEFAULT_TASK_1_2_DIR
+    if task_name == "task_1_3":
+        return DEFAULT_TASK_1_3_DIR
+    return DEFAULT_TASK_1_1_DIR
 
 
 if __name__ == "__main__":

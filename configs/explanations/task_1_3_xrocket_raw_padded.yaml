@@ -1,0 +1,22 @@
+task: task_1_3
+experiment: task_1_3_xrocket_raw_padded
+processed_dir: data/processed/ksas_m2_raw_padded
+xrocket_dir: results/xrocket/m3_raw_padded
+output_dir: results/explanations/task_1_3
+classes: [0, 1, 2, 3, 4, 5]
+random_state: 42
+
+patterns:
+  stable_candidate_count: 12
+  correct_case_count: 3
+  include_failure_case: true
+  target_length: 56
+  nominal_sampling_rate_hz: 50.0
+  primary_model: xrocket_random_forest
+
+models:
+  random_forest:
+    n_estimators: 500
+    class_weight: balanced
+    max_features: sqrt
+    n_jobs: -1

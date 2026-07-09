@@ -92,3 +92,26 @@ Short spans are not absent; they retain about `0.1218` normalized importance.
 However, the dominant evidence is long-duration/low-frequency-like in the
 padded model. The approximate seconds should be treated only as nominal
 context because the dataset does not retain measured Android sensor timing.
+
+## M6 Task 1.3 Pattern Interpretation
+
+The M6 pattern evidence is stored in `results/explanations/task_1_3/`. The
+selected examples map stable XROCKET PPV features back to representative
+response intervals and same-family device-channel traces. The strongest
+stable features are again long-span, so their interpretation emphasizes broad
+movement shape, transition timing, sustained orientation structure, and
+device-frame acceleration or angular-velocity patterns rather than isolated
+micro-events.
+
+The report should phrase these examples as sensor-coordinate case studies.
+For example, `lin_accel_y` and `lin_accel_z` cases can support cautious
+discussion of gravity-removed linear acceleration along device axes, while
+`gravity_z` can support orientation-related structure during an upward block.
+Because the localized intervals can overlap right-padding, M6 labels the
+human meaningfulness of the generated cases as plausible or ambiguous rather
+than clear.
+
+These explanations could help a future expert-review workflow by showing which
+signal regions the model used for a prediction. They do not validate automated
+coaching, skill assessment, force estimation, anatomical joint mechanics, or
+learning gains.

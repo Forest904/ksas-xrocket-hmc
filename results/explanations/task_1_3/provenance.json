@@ -1,0 +1,23 @@
+{
+  "folds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "git_commit": "80a16b939f368988d96418784281a71662912b62",
+  "localization": "PPV features are localized to a representative strongest above-threshold response interval; PPV does not imply a unique instant.",
+  "m3_provenance_sha256": "180f9d4668c77352ea9afee3970eb77d6bcdeca573f0212450247da962e23d83",
+  "output_dir": "results/explanations/task_1_3",
+  "packages": {
+    "matplotlib": "3.10.9",
+    "numpy": "2.4.6",
+    "pandas": "3.0.3",
+    "scikit-learn": "1.9.0",
+    "torch": "2.13.0"
+  },
+  "processed_dir": "data/processed/ksas_m2_raw_padded",
+  "tensor_sha256": "27598490ed9b086d40a17f483c509a65b97d821289e048e5cabf7a848cda88ef",
+  "xrocket_dir": "results/xrocket/m3_raw_padded"
+}

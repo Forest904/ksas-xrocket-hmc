@@ -384,6 +384,8 @@ The roadmap is implementation-facing. It defines what to build first, what evide
 
 ## M6: Task 1.3 Discriminative-Pattern Interpretation
 
+**Status:** Complete as of 2026-07-09.
+
 **Objective:** Answer Task 1.3 by mapping important transformed features back to representative signal intervals and interpreting their human meaning.
 
 **Ordered checklist:**
@@ -411,8 +413,36 @@ The roadmap is implementation-facing. It defines what to build first, what evide
 
 **Blocking decisions:**
 
-- Decide whether pattern localization is based on maximum convolution response, PPV-related intervals, or another implementation-specific method.
-- If localization is technically unreliable, report representative high-activation sequences and document the limitation rather than overclaiming interval precision.
+- Resolved: XROCKET features in the saved M3 representation are PPV features,
+  so localization is based on the strongest representative above-threshold
+  response interval. The report explicitly avoids claiming a unique causal
+  instant.
+- Resolved: reconstructed per-position responses are verified against the
+  saved transformed PPV feature value before case-study rows are written.
+- Guardrail: selected patterns are long-span and can overlap right-padding, so
+  case interpretations include padding flags and human-meaningfulness labels.
+
+**Completed outputs:**
+
+- Added Task 1.3 support to `hmc explain` and
+  `configs/explanations/task_1_3_xrocket_raw_padded.yaml`.
+- Added `src/ksas_xrocket/task_1_3_explain.py` to select stable important
+  PPV features, reconstruct kernel responses, localize representative
+  intervals, classify human meaningfulness, and write report-ready artifacts.
+- Generated `results/explanations/task_1_3/` with selected pattern tables,
+  pattern case studies, response traces, feature distributions, figures,
+  provenance, resolved config, and `task_1_3_answer.md`.
+- Documented three correctly classified high-activation examples and one
+  failure or ambiguous example. The cases link feature metadata to processed
+  and original signal intervals, prediction metadata, participant pseudonyms,
+  arm metadata, movement labels, dilation, and padding diagnostics.
+- Classified the generated examples as plausible or ambiguous, reflecting
+  useful sensor-coordinate evidence but not validated coaching or biomechanical
+  ground truth.
+- Updated `docs/methodology.md`, `docs/biomechanics.md`,
+  `docs/limitations.md`, `docs/reproducibility.md`, and `docs/ai-use.md`.
+- Added Task 1.3 tests for stable feature selection, PPV reconstruction,
+  interval mapping, case selection, CLI smoke outputs, and figures.
 
 ## M7: Robustness, Confounds, and Negative Controls
 

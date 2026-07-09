@@ -82,3 +82,17 @@ M5 Task 1.2 limitations:
 - Class-specific temporal-scale profiles are one-vs-rest random-forest
   diagnostics fitted on transformed features. They are secondary evidence, not
   native class-specific explanations from the original multiclass model.
+
+M6 Task 1.3 limitations:
+
+- The selected XROCKET features are PPV features. A PPV value is a proportion
+  over response positions, so the localized interval is only a representative
+  strongest above-threshold segment rather than a unique causal instant.
+- Important selected features are mostly long-span dilation-5 or dilation-6
+  patterns. Their receptive fields can cover much of a short KSAS recording
+  and may overlap right-padding or convolution edge padding.
+- Human-meaningfulness labels are heuristic report aids based on feature
+  separation and padding overlap. They are not expert biomechanical validation.
+- Pattern interpretations remain in Android device coordinates and cannot
+  establish muscle activation, joint mechanics, force, expertise, coaching
+  quality, or learning gains.

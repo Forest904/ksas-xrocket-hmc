@@ -1,0 +1,32 @@
+{
+  "classes": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "config": "configs/explanations/task_1_3_xrocket_raw_padded.yaml",
+  "models": {
+    "random_forest": {
+      "class_weight": "balanced",
+      "max_features": "sqrt",
+      "n_estimators": 500,
+      "n_jobs": -1
+    }
+  },
+  "output_dir": "results/explanations/task_1_3",
+  "patterns": {
+    "correct_case_count": 3,
+    "include_failure_case": true,
+    "localization": "strongest representative PPV response interval",
+    "nominal_sampling_rate_hz": 50.0,
+    "primary_model": "xrocket_random_forest",
+    "stable_candidate_count": 12,
+    "target_length": 56
+  },
+  "processed_dir": "data/processed/ksas_m2_raw_padded",
+  "task": "task_1_3",
+  "xrocket_dir": "results/xrocket/m3_raw_padded"
+}
