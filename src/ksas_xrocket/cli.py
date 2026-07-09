@@ -18,14 +18,16 @@ from ksas_xrocket.config import (
 )
 from ksas_xrocket.prepare import DEFAULT_TARGET_LENGTH, PreparationError, prepare_ksas_tensors
 from ksas_xrocket.splits import SplitError, generate_grouped_splits
+from ksas_xrocket.xrocket_adapter import XRocketAdapterError
+from ksas_xrocket.xrocket_experiment import XRocketExperimentError, run_xrocket_experiment
 
 DEFAULT_MANIFEST = Path("data/manifests/samples.csv")
 DEFAULT_PROCESSED_DIR = Path("data/processed/ksas_m2_raw_padded")
 DEFAULT_SPLITS_DIR = Path("data/manifests/splits")
 DEFAULT_BASELINE_DIR = Path("results/baselines/m2_raw_padded")
+DEFAULT_XROCKET_DIR = Path("results/xrocket/m3_raw_padded")
 
 _PLACEHOLDERS = {
-    "train": "M3 XROCKET model training",
     "explain": "M4-M6 explanation analyses",
     "figures": "M4-M8 report figure generation",
     "report": "M8 technical report build",
@@ -160,6 +162,24 @@ def build_parser() -> argparse.ArgumentParser:
         help="Random seed for stochastic baseline estimators.",
     )
     baseline_parser.set_defaults(command="baseline")
+
+    train_parser = subparsers.add_parser(
+        "train",
+        help="Train the M3 XROCKET models on saved grouped folds.",
+    )
+    train_parser.add_argument("--config", type=Path, default=None)
+    train_parser.add_argument("--processed-dir", type=Path, default=None)
+    train_parser.add_argument("--splits-dir", type=Path, default=None)
+    train_parser.add_argument("--output-dir", type=Path, default=None)
+    train_parser.add_argument("--folds", type=int, nargs="+", default=None)
+    train_parser.add_argument("--random-state", type=int, default=None)
+    train_parser.add_argument("--batch-size", type=int, default=None)
+    train_parser.add_argument(
+        "--overwrite",
+        action="store_true",
+        help="Explicitly replace a non-empty output directory.",
+    )
+    train_parser.set_defaults(command="train")
 
     for command, milestone in _PLACEHOLDERS.items():
         subparser = subparsers.add_parser(command, help=f"Placeholder for {milestone}.")
@@ -337,6 +357,120 @@ def main(argv: Sequence[str] | None = None) -> int:
         print(f"Provenance: {baseline_result.provenance_path}")
         return 0
 
+    if args.command == "train":
+        try:
+            config = load_yaml_config(args.config)
+            xrocket_config = nested_mapping(config, "xrocket")
+            classifiers_config = nested_mapping(config, "classifiers")
+            rf_config = nested_mapping(classifiers_config, "random_forest")
+            logistic_config = nested_mapping(classifiers_config, "logistic_regression")
+            processed_dir = args.processed_dir or path_config_value(
+                config,
+                "processed_dir",
+                DEFAULT_PROCESSED_DIR,
+            )
+            splits_dir = args.splits_dir or path_config_value(
+                config,
+                "splits_dir",
+                DEFAULT_SPLITS_DIR,
+            )
+            output_dir = args.output_dir or path_config_value(
+                config,
+                "output_dir",
+                DEFAULT_XROCKET_DIR,
+            )
+            random_state = (
+                args.random_state
+                if args.random_state is not None
+                else int_config_value(config, "random_state", 42)
+            )
+            batch_size = (
+                args.batch_size
+                if args.batch_size is not None
+                else int_config_value(config, "batch_size", 16)
+            )
+            folds = folds_from_config(config, args.folds)
+            label_ids = label_ids_from_config(config)
+            resolved_config = {
+                "config": args.config.as_posix() if args.config is not None else None,
+                "processed_dir": processed_dir.as_posix(),
+                "splits_dir": splits_dir.as_posix(),
+                "output_dir": output_dir.as_posix(),
+                "target": config.get("target", "movement_label_id"),
+                "classes": list(label_ids),
+                "folds": list(folds) if folds is not None else "all",
+                "random_state": random_state,
+                "batch_size": batch_size,
+                "xrocket": {
+                    "feature_cap": int_config_value(xrocket_config, "feature_cap", 10_000),
+                    "kernel_length": int_config_value(xrocket_config, "kernel_length", 9),
+                    "max_dilations": int_config_value(xrocket_config, "max_dilations", 32),
+                    "combination_order": int_config_value(xrocket_config, "combination_order", 1),
+                    "combination_method": xrocket_config.get("combination_method", "additive"),
+                    "nominal_sampling_rate_hz": float(
+                        xrocket_config.get("nominal_sampling_rate_hz", 50.0)
+                    ),
+                },
+                "classifiers": {
+                    "random_forest": {
+                        "n_estimators": int_config_value(rf_config, "n_estimators", 500),
+                        "class_weight": "balanced",
+                        "max_features": "sqrt",
+                        "n_jobs": -1,
+                    },
+                    "logistic_regression": {
+                        "max_iter": int_config_value(logistic_config, "max_iter", 2000),
+                        "penalty": "l2",
+                        "standardize": True,
+                    },
+                },
+                "padding_diagnostics": True,
+            }
+            xrocket_result = run_xrocket_experiment(
+                processed_dir=processed_dir,
+                splits_dir=splits_dir,
+                output_dir=output_dir,
+                folds=folds,
+                random_state=random_state,
+                label_ids=label_ids,
+                batch_size=batch_size,
+                feature_cap=int(resolved_config["xrocket"]["feature_cap"]),
+                kernel_length=int(resolved_config["xrocket"]["kernel_length"]),
+                max_dilations=int(resolved_config["xrocket"]["max_dilations"]),
+                combination_order=int(resolved_config["xrocket"]["combination_order"]),
+                combination_method=str(resolved_config["xrocket"]["combination_method"]),
+                nominal_sampling_rate_hz=float(
+                    resolved_config["xrocket"]["nominal_sampling_rate_hz"]
+                ),
+                random_forest_estimators=int(
+                    resolved_config["classifiers"]["random_forest"]["n_estimators"]
+                ),
+                logistic_max_iter=int(
+                    resolved_config["classifiers"]["logistic_regression"]["max_iter"]
+                ),
+                overwrite=args.overwrite,
+                resolved_config=resolved_config,
+            )
+        except (
+            ConfigError,
+            BaselineError,
+            XRocketAdapterError,
+            XRocketExperimentError,
+            TypeError,
+            ValueError,
+        ) as exc:
+            print(str(exc))
+            return 1
+
+        print("M3 XROCKET experiment completed.")
+        print(f"Fold metrics: {xrocket_result.metrics_path}")
+        print(f"Aggregate metrics: {xrocket_result.aggregate_metrics_path}")
+        print(f"Predictions: {xrocket_result.predictions_path}")
+        print(f"Confusion matrices: {xrocket_result.confusion_matrices_path}")
+        print(f"Runtime: {xrocket_result.runtime_path}")
+        print(f"Provenance: {xrocket_result.provenance_path}")
+        return 0
+
     milestone = _PLACEHOLDERS[args.command]
     print(f"`hmc {args.command}` is reserved for {milestone}; no data or model work runs in M0.")
     return 0
@@ -351,6 +485,25 @@ def label_ids_from_config(config: dict[str, object]) -> tuple[int, ...]:
         return tuple(int(value) for value in values)
     except (TypeError, ValueError) as exc:
         raise ConfigError("Config field 'classes' must contain integer labels") from exc
+
+
+def folds_from_config(
+    config: dict[str, object],
+    cli_folds: list[int] | None,
+) -> tuple[int, ...] | None:
+    """Return selected fold IDs, with CLI values taking precedence."""
+    values: object = cli_folds if cli_folds is not None else config.get("folds")
+    if values is None or values == "all":
+        return None
+    if not isinstance(values, list) or not values:
+        raise ConfigError("Config field 'folds' must be 'all' or a non-empty list")
+    try:
+        folds = tuple(int(value) for value in values)
+    except (TypeError, ValueError) as exc:
+        raise ConfigError("Config field 'folds' must contain integers") from exc
+    if len(set(folds)) != len(folds) or any(fold < 0 for fold in folds):
+        raise ConfigError("Config field 'folds' must contain unique non-negative integers")
+    return folds
 
 
 if __name__ == "__main__":

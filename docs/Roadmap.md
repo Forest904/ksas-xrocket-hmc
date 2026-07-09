@@ -194,7 +194,7 @@ The roadmap is implementation-facing. It defines what to build first, what evide
 
 ## M3: XROCKET Integration and Metadata Traceability
 
-**Status:** Ready to start as of 2026-07-09; implementation and timed prototype remain.
+**Status:** Complete as of 2026-07-09.
 
 **Objective:** Fit an XROCKET-based model that exposes enough metadata to answer the assignment's explainability questions.
 
@@ -241,6 +241,25 @@ The roadmap is implementation-facing. It defines what to build first, what evide
   blocker. Time one grouped-fold prototype before launching all folds.
 - Guardrail: verify how right-padding affects thresholds and high-dilation
   features before treating the primary explanations as motion evidence.
+
+**Completion evidence:**
+
+- Added the explicit-fit `XRocketAdapter`, five-fold training runner, real
+  `hmc train` command, and `configs/experiments/m3_xrocket_raw_padded.yaml`.
+- Generated 9,072 aligned PPV features per fold with metadata, model-native
+  importance, fitted adapters/classifiers, predictions, confusion matrices,
+  runtime, provenance, and padding diagnostics under
+  `results/xrocket/m3_raw_padded/`.
+- Random-forest mean macro F1 is `0.8829`; logistic-regression sensitivity mean
+  macro F1 is `0.8838`.
+- Full experiment runtime was 35.58 seconds. Saved adapter and classifier
+  reload checks preserve transformed features and predictions.
+- Padding diagnostics changed 25.4% of random-forest and 23.8% of logistic test
+  predictions when padded sequences were cropped. This guardrail is active for
+  M4-M6 interpretation.
+- Added M3 tests for explicit fitting, shape and finite-value validation,
+  metadata alignment, batch invariance, Parquet and model reload, complete
+  smoke artifacts, and overwrite protection.
 
 ## M4: Task 1.1 Sensor-Axis Contribution Analysis
 

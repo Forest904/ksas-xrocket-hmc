@@ -58,10 +58,12 @@ def test_prepare_command_exposes_real_options(capsys) -> None:  # type: ignore[n
     assert "--output-dir" in captured.out
 
 
-def test_train_placeholder_command_returns_deferred_message(capsys) -> None:  # type: ignore[no-untyped-def]
-    exit_code = main(["train"])
+def test_train_command_exposes_real_options(capsys) -> None:  # type: ignore[no-untyped-def]
+    with pytest.raises(SystemExit) as exc_info:
+        main(["train", "--help"])
 
     captured = capsys.readouterr()
-    assert exit_code == 0
-    assert "reserved for M3" in captured.out
-    assert "no data or model work runs in M0" in captured.out
+    assert exc_info.value.code == 0
+    assert "--config" in captured.out
+    assert "--folds" in captured.out
+    assert "--overwrite" in captured.out

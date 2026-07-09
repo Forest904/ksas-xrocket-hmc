@@ -1,0 +1,44 @@
+{
+  "actual_dilations": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+  ],
+  "feature_dims": {
+    "num_combinations": 18,
+    "num_dilations": 6,
+    "num_kernels": 84,
+    "num_thresholds": 1
+  },
+  "folds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "git_commit": "e7ca9a9c82590f17ce48916db61fb320997685b6",
+  "output_dir": "results/xrocket/m3_raw_padded",
+  "packages": {
+    "joblib": "1.5.3",
+    "numpy": "2.4.6",
+    "pandas": "3.0.3",
+    "pyarrow": "24.0.0",
+    "scikit-learn": "1.9.0",
+    "torch": "2.13.0",
+    "xrocket": "0.1"
+  },
+  "processed_dir": "data/processed/ksas_m2_raw_padded",
+  "random_state": 42,
+  "split_manifest_sha256": "5596f3494e154ee60d9be455e3fc7783804d01afa996fca2c045c1538af408d7",
+  "splits_dir": "data/manifests/splits",
+  "tensor_sha256": "27598490ed9b086d40a17f483c509a65b97d821289e048e5cabf7a848cda88ef",
+  "xrocket_upstream": {
+    "license_status": "Course-authorized academic use; upstream has no public license file",
+    "repository": "https://github.com/dida-do/xrocket.git",
+    "revision": "1511e810c59d0c42f6431ef2f1f9fa57c71e9b2f"
+  }
+}

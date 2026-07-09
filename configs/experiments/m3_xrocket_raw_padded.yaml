@@ -1,0 +1,41 @@
+experiment: m3_xrocket_raw_padded
+processed_dir: data/processed/ksas_m2_raw_padded
+splits_dir: data/manifests/splits
+output_dir: results/xrocket/m3_raw_padded
+target: movement_label_id
+classes: [0, 1, 2, 3, 4, 5]
+folds: [0, 1, 2, 3, 4]
+random_state: 42
+batch_size: 16
+
+xrocket:
+  in_channels: 18
+  max_kernel_span: 56
+  combination_order: 1
+  combination_method: additive
+  feature_cap: 10000
+  kernel_length: 9
+  max_dilations: 32
+  expected_num_kernels: 84
+  expected_dilations: [1, 2, 3, 4, 5, 6]
+  expected_num_features: 9072
+  nominal_sampling_rate_hz: 50.0
+
+classifiers:
+  random_forest:
+    n_estimators: 500
+    class_weight: balanced
+    max_features: sqrt
+    n_jobs: -1
+  logistic_regression:
+    standardize: true
+    penalty: l2
+    max_iter: 2000
+
+outputs:
+  save_features: true
+  save_feature_metadata: true
+  save_feature_importance: true
+  save_models: true
+  save_predictions: true
+  save_padding_diagnostics: true

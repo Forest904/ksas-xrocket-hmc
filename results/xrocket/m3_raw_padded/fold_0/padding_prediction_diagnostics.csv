@@ -1,0 +1,3 @@
+fold,model,test_sample_count,prediction_change_count,prediction_change_fraction
+0,xrocket_random_forest,48,9,0.1875
+0,xrocket_logistic_regression,48,10,0.20833333333333334

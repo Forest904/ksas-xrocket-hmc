@@ -1,0 +1,46 @@
+{
+  "batch_size": 16,
+  "classes": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "classifiers": {
+    "logistic_regression": {
+      "max_iter": 2000,
+      "penalty": "l2",
+      "standardize": true
+    },
+    "random_forest": {
+      "class_weight": "balanced",
+      "max_features": "sqrt",
+      "n_estimators": 500,
+      "n_jobs": -1
+    }
+  },
+  "config": "configs/experiments/m3_xrocket_raw_padded.yaml",
+  "folds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "output_dir": "results/xrocket/m3_raw_padded",
+  "padding_diagnostics": true,
+  "processed_dir": "data/processed/ksas_m2_raw_padded",
+  "random_state": 42,
+  "splits_dir": "data/manifests/splits",
+  "target": "movement_label_id",
+  "xrocket": {
+    "combination_method": "additive",
+    "combination_order": 1,
+    "feature_cap": 10000,
+    "kernel_length": 9,
+    "max_dilations": 32,
+    "nominal_sampling_rate_hz": 50.0
+  }
+}

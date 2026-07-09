@@ -138,8 +138,13 @@ make report
 Example experiment command:
 
 ```bash
-uv run hmc train   --config configs/experiments/movement_xrocket_rf.yaml
+uv run hmc train --config configs/experiments/m3_xrocket_raw_padded.yaml
 ```
+
+This command fits XROCKET thresholds on each training fold only, trains the
+random-forest primary model and logistic-regression sensitivity model, and
+writes traceable fold artifacts under `results/xrocket/m3_raw_padded/`. Reruns
+must opt in to replacement with `--overwrite`.
 
 ---
 

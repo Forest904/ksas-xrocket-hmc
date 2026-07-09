@@ -28,18 +28,21 @@ Raw KSAS data must remain immutable and untracked. Local raw files belong under 
 
 ## Workflow
 
-The M2 preprocessing and baseline workflow is:
+The M2 preprocessing, baseline, and M3 model workflow is:
 
 ```bash
 uv run hmc prepare --config configs/preprocessing_m2_raw_padded.yaml
 uv run hmc baseline --config configs/baseline_m2_raw_padded.yaml
+uv run hmc train --config configs/experiments/m3_xrocket_raw_padded.yaml
 ```
 
 `hmc prepare` writes padded tensors and participant-grouped split manifests.
-`hmc baseline` trains the majority, statistical logistic-regression, and
-statistical random-forest baselines on those exact folds. Both commands save
-resolved configs and provenance for the generated artifacts.
+`hmc baseline` trains the statistical baselines on those exact folds. `hmc
+train` fits a separate XROCKET encoder on each training fold and saves features,
+metadata, models, metrics, predictions, confusion matrices, runtime, provenance,
+and padding diagnostics. It refuses to replace a non-empty output directory
+unless `--overwrite` is passed explicitly.
 
-M3 and later runs must additionally save the XROCKET Git revision, encoder
-hyperparameters, ordered feature metadata, threshold-fitting fold, PyTorch
-version, device, runtime, and padding strategy.
+Each M3 fold directory contains the fitted adapter and classifiers. The runner
+reloads them before completing and verifies that features and smoke-sample
+predictions are unchanged.
