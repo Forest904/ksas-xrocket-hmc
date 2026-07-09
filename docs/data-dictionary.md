@@ -67,8 +67,12 @@ Each participant and arm combination has all six labels.
 | `i` | left arm |
 | `d` | right arm |
 
-The README defines the arm used for the execution, but it does not fully define
-phone placement or device orientation.
+The dataset README defines the arm used for the execution. The companion KSAS
+application instructs users to attach the phone to the forearm in a
+runner-style band. Its reference image shows the screen facing outward, the
+long device axis approximately aligned with the forearm, and the top of the
+phone toward the hand. This is the intended protocol orientation; exact
+placement repeatability for every archived recording cannot be verified.
 
 ## Channels And Units
 
@@ -90,7 +94,9 @@ The local dataset README identifies the recording device as Xiaomi Mi A2.
 - CSV row order is treated as source sample order.
 - The files appear to be already segmented by movement instance.
 - No timestamp column is present.
-- Sampling frequency is unknown.
+- The acquisition app requests Android `SENSOR_DELAY_GAME`, corresponding to a
+  nominal 20 ms interval or 50 Hz. Android treats this as a hint, and no event
+  timestamps were retained, so actual rate and jitter are unknown.
 - Sequence boundaries are sample indices `0` through `original_length - 1`.
 - M1 does not resample, pad, truncate, smooth, or normalize data.
 - `processed_length` equals `original_length` in `samples.csv`.
@@ -122,8 +128,10 @@ Important fields:
 - `split_group`: participant ID for leakage-safe splitting.
 - `sensor_location`: `smartphone`.
 - `device_model`: `XiaoMi Mi A2`.
-- `device_orientation`: empty because unresolved.
-- `sampling_rate_hz`: empty because unresolved.
+- `device_orientation`: empty in the M1 manifest because the manifest predates
+  the protocol-source audit; use the documented forearm/device-frame protocol.
+- `sampling_rate_hz`: empty because 50 Hz is nominal rather than a measured
+  per-recording rate.
 - `original_length` and `processed_length`: source and current sequence length.
 - `channel_names`: JSON list of ordered channels.
 - `quality_flag`: `valid` for every M1-audited sample.
@@ -142,12 +150,16 @@ The audit found:
 - 0 duplicate rows.
 - 0 exact duplicate file checksums.
 
-## Known Unknowns
+## Known Measurement Limits
 
-- Sampling frequency is not stated in the README and cannot be derived from CSVs.
-- CSVs have no timestamps.
-- Phone placement and device orientation are not fully specified.
+- The nominal requested rate is 50 Hz, but CSVs have no timestamps from which
+  to verify realized sampling rate or jitter.
+- Six Android sensor streams were registered independently and exported by
+  sample index after truncation to a common length; exact cross-sensor temporal
+  alignment cannot be reconstructed.
+- The app defines intended forearm placement, but placement consistency across
+  archived participants cannot be measured retrospectively.
 - Preprocessing before these CSVs, if any, is not fully specified by the dataset
   README.
-- Time-based XROCKET interpretation must use sample spans unless stronger
-  sampling-rate evidence is found.
+- XROCKET temporal results must report sample spans first. Seconds may be shown
+  as approximate values based on nominal 50 Hz.

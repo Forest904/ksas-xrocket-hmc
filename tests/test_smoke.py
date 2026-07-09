@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import pytest
+import torch
+from xrocket.encoder import XRocket
 
 from ksas_xrocket import __version__
 from ksas_xrocket.cli import main
@@ -8,6 +10,23 @@ from ksas_xrocket.cli import main
 
 def test_package_exposes_version() -> None:
     assert __version__
+
+
+def test_xrocket_dependency_exposes_traceable_features() -> None:
+    encoder = XRocket(
+        in_channels=1,
+        max_kernel_span=9,
+        combination_order=1,
+        feature_cap=84,
+    )
+    training_batch = torch.zeros((2, 1, 9))
+    encoder.fit(training_batch)
+
+    features = encoder(training_batch)
+
+    assert features.shape == (2, 84)
+    assert len(encoder.feature_names) == 84
+    assert encoder.feature_names[0][1] == 1
 
 
 def test_cli_version_exits_successfully(capsys) -> None:  # type: ignore[no-untyped-def]

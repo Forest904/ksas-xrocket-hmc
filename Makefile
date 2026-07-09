@@ -17,6 +17,7 @@ test:
 
 smoke:
 	uv run python -c "import ksas_xrocket"
+	uv run python -c "from xrocket.encoder import XRocket; print(XRocket)"
 	uv run hmc --version
 	uv run hmc prepare
 

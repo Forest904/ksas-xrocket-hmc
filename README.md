@@ -78,7 +78,8 @@ Main evaluation metrics include:
 - `uv`
 - NumPy, pandas, SciPy, PyArrow
 - scikit-learn
-- XROCKET
+- PyTorch
+- XROCKET, pinned to the audited `dida-do/xrocket` Git revision
 - Matplotlib
 - JupyterLab
 - Quarto and LaTeX

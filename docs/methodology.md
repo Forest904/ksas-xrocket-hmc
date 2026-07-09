@@ -47,3 +47,40 @@ M2 baselines use the exact saved grouped folds:
 
 Saved metrics include macro F1, balanced accuracy, per-class precision, recall,
 F1, support, predictions, confusion matrices, and provenance.
+
+## M3 Readiness Decisions
+
+The primary encoder is the course-authorized `dida-do/xrocket` implementation,
+pinned in `pyproject.toml` and `uv.lock` to Git commit
+`1511e810c59d0c42f6431ef2f1f9fa57c71e9b2f`. The original ROCKET repository is
+not required. XROCKET accepts tensors in sample, channel, time order and exposes
+feature names containing pattern, dilation, channel combination, and threshold.
+
+The primary experiment will use:
+
+- 18 input channels;
+- `combination_order=1` and additive channel mixing;
+- kernel length 9;
+- a maximum kernel span selected and recorded by the M3 configuration;
+- the existing participant-grouped folds;
+- explicit threshold fitting on training-fold data only; and
+- a random-forest classifier, followed by a linear-classifier sensitivity run
+  if schedule permits.
+
+The adapter must persist an ordered metadata row for every transformed feature.
+It must also test padding sensitivity because XROCKET has no valid-timestep mask
+and performs convolutional zero-padding internally.
+
+## Temporal Interpretation Policy
+
+The KSAS application requests `SENSOR_DELAY_GAME`, nominally 20 ms or 50 Hz.
+Android does not guarantee that requested delay, and the dataset contains no
+event timestamps. Temporal-scale outputs will therefore report:
+
+1. dilation and effective receptive field in samples;
+2. approximate seconds using nominal 50 Hz; and
+3. an explicit warning that the realized sampling rate and jitter are unknown.
+
+Dilation is not a Fourier frequency. Interpretive language will distinguish
+short-duration/high-frequency-like patterns from
+long-duration/low-frequency-like structure.

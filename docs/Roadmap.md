@@ -123,7 +123,10 @@ The roadmap is implementation-facing. It defines what to build first, what evide
 **Blocking decisions:**
 
 - Resolved: copy the local dataset folder into `data/raw/KSAS-Dataset/`; delete the root copy manually only after confirming the copied raw path is sufficient.
-- Resolved: sampling frequency remains unknown, so M1 reports temporal spans in samples and defers seconds-based interpretation.
+- Superseded on 2026-07-09: M1 could not establish a sampling rate from the
+  dataset alone. The later protocol audit found that the KSAS app requests
+  `SENSOR_DELAY_GAME`, nominally 20 ms or 50 Hz; realized timing remains
+  unverifiable because event timestamps were not retained.
 
 **Completed outputs:**
 
@@ -131,7 +134,10 @@ The roadmap is implementation-facing. It defines what to build first, what evide
 - Confirmed raw dataset paths remain ignored by Git.
 - Added `hmc audit` to generate `data/manifests/samples.csv`, `data/manifests/ksas_provenance.json`, `results/audit/ksas_audit_summary.json`, and `results/audit/ksas_numeric_ranges.csv`.
 - Verified 240 CSV files, expected labels, participants, arms, class coverage, 18-channel schema, numeric values, no missing values, no duplicate rows, and no exact duplicate files.
-- Completed `docs/data-dictionary.md` and recorded unresolved sampling-frequency and orientation facts in `docs/limitations.md`, `docs/decision-log.md`, and `docs/open-questions.md`.
+- Completed `docs/data-dictionary.md` and recorded the sampling-frequency and
+  orientation facts that were unresolved at M1. The 2026-07-09 protocol/source
+  audit later superseded those entry blockers with documented operational
+  decisions and retained measurement caveats.
 
 ## M2: Preprocessing, Manifests, Grouped Splits, and Baseline Models
 
@@ -188,6 +194,8 @@ The roadmap is implementation-facing. It defines what to build first, what evide
 
 ## M3: XROCKET Integration and Metadata Traceability
 
+**Status:** Ready to start as of 2026-07-09; implementation and timed prototype remain.
+
 **Objective:** Fit an XROCKET-based model that exposes enough metadata to answer the assignment's explainability questions.
 
 **Ordered checklist:**
@@ -217,8 +225,22 @@ The roadmap is implementation-facing. It defines what to build first, what evide
 
 **Blocking decisions:**
 
-- If XROCKET metadata are inaccessible, modify or wrap the implementation before continuing; do not use an opaque transform for final explanations.
-- If runtime is too high, reduce seeds or kernel count before dropping mandatory analyses.
+- Resolved: use `dida-do/xrocket` revision
+  `1511e810c59d0c42f6431ef2f1f9fa57c71e9b2f`, imported as
+  `from xrocket.encoder import XRocket`.
+- Resolved: course-authorized academic use is documented. The upstream
+  repository has no public license file, so do not imply a general
+  open-source license or redistribute modified upstream code without separate
+  permission.
+- Resolved: the original ROCKET repository is not a runtime dependency.
+- Resolved: XROCKET exposes `(pattern, dilation, channels, threshold)` through
+  `feature_names`, as well as feature dimensions and channel combinations.
+- Resolved: fit thresholds explicitly on training-fold data only; never allow
+  a validation/test batch to trigger automatic fitting.
+- Resolved for entry to M3: runtime is an empirical tuning constraint, not a
+  blocker. Time one grouped-fold prototype before launching all folds.
+- Guardrail: verify how right-padding affects thresholds and high-dilation
+  features before treating the primary explanations as motion evidence.
 
 ## M4: Task 1.1 Sensor-Axis Contribution Analysis
 
@@ -250,8 +272,13 @@ The roadmap is implementation-facing. It defines what to build first, what evide
 
 **Blocking decisions:**
 
-- Decide how to allocate importance for multi-channel kernels: combination view, marginal view, or both.
-- Decide whether arm-specific analysis is mandatory based on whether left/right rankings appear meaningfully different.
+- Resolved: use `combination_order=1` for the primary experiment, giving direct
+  channel attribution. Treat order-2 interactions as an optional sensitivity
+  run; if used, show both combination-level importance and equal-allocation
+  marginal channel importance.
+- Resolved: always report pooled results with arm-stratified diagnostics.
+  Promote arm-specific rankings to a main result if their ordering or effect
+  sizes differ materially.
 
 ## M5: Task 1.2 Dilations/Frequencies and Temporal-Scale Analysis
 
@@ -261,7 +288,9 @@ The roadmap is implementation-facing. It defines what to build first, what evide
 
 1. Extract dilation, kernel length, and receptive-field metadata for every important XROCKET feature.
 2. Convert dilation to effective temporal span in samples.
-3. Convert spans to seconds only if sampling frequency is verified; otherwise report sample spans and mark real-time interpretation as limited.
+3. Report spans in samples and convert them to approximate seconds using the
+   nominal 50 Hz request, with an explicit caveat that realized Android sensor
+   timing was not retained.
 4. Define short, intermediate, and long temporal-scale bins using a documented rule.
 5. Aggregate importance by dilation and temporal-scale bin across folds.
 6. Compare temporal-scale profiles globally and per movement class where possible.
@@ -282,8 +311,12 @@ The roadmap is implementation-facing. It defines what to build first, what evide
 
 **Blocking decisions:**
 
-- Decide the binning rule for temporal scales before inspecting final rankings too heavily.
-- Decide how to phrase temporal-frequency language if the dataset lacks a verified sampling rate.
+- Resolved: predefine scale bins from the finite receptive-field mapping before
+  inspecting final importance rankings.
+- Resolved: describe dilation as temporal span, not Fourier frequency. Use
+  "short-duration/high-frequency-like" and
+  "long-duration/low-frequency-like"; report samples first and approximate
+  seconds at nominal 50 Hz second.
 
 ## M6: Task 1.3 Discriminative-Pattern Interpretation
 
@@ -411,4 +444,6 @@ The project is complete only when all of the following are true:
 2. Record local dataset provenance and acquisition date.
 3. Run the first dataset audit and generate `data/manifests/samples.csv`.
 4. Fill `docs/data-dictionary.md` before writing preprocessing or modeling code.
-5. Record unresolved facts, such as sampling frequency or device orientation, in `docs/limitations.md` and `docs/decision-log.md`.
+5. Record remaining measurement limits, such as realized sampling jitter and
+   participant-level placement consistency, in `docs/limitations.md` and
+   `docs/decision-log.md`.

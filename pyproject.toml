@@ -15,7 +15,17 @@ dependencies = [
     "scikit-learn>=1.5",
     "scipy>=1.14",
     "seaborn>=0.13",
+    "torch>=2.0",
+    "xrocket==0.1",
 ]
+
+[tool.uv.sources]
+xrocket = { git = "https://github.com/dida-do/xrocket.git", rev = "1511e810c59d0c42f6431ef2f1f9fa57c71e9b2f" }
+
+[[tool.uv.dependency-metadata]]
+name = "xrocket"
+version = "0.1"
+requires-dist = ["torch>=2.0"]
 
 [project.scripts]
 hmc = "ksas_xrocket.cli:main"
