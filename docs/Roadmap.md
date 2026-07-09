@@ -507,6 +507,8 @@ The roadmap is implementation-facing. It defines what to build first, what evide
 
 ## M8: Report Generation, Reproduction Check, and Final Submission
 
+**Status:** Complete as of 2026-07-09.
+
 **Objective:** Produce the final PDF and repository state required by the assignment.
 
 **Ordered checklist:**
@@ -541,8 +543,25 @@ The roadmap is implementation-facing. It defines what to build first, what evide
 
 **Blocking decisions:**
 
-- If the report build toolchain fails close to submission, use the simplest reliable PDF generation path and document the change.
-- If final reproduction is too slow, run and document a clean smoke reproduction plus archived full-run artifacts.
+- Resolved: use Pandoc with MiKTeX/pdflatex for the final report because
+  Quarto is not installed locally. Poppler `pdftoppm` is used for visual PDF
+  verification.
+- Resolved: use the documented clean smoke reproduction gate plus committed
+  full-run artifacts under `results/` for final submission.
+
+**Completed outputs:**
+
+- Added `hmc figures` and `hmc report` for M8 report artifact collection and
+  PDF rendering.
+- Added `reports/technical_report.md`, `reports/references.bib`,
+  `reports/latex_header.tex`, curated `reports/figures/` and
+  `reports/tables/`, `reports/report_artifacts_manifest.md`, and
+  `reports/ksas_xrocket_hmc_report.pdf`.
+- Updated README and `docs/reproducibility.md` with the final repository URL,
+  data access rules, report build commands, smoke and full rebuild commands,
+  and conservative licensing/status notes.
+- Verified quality checks, `make reproduce`, `make report`, PDF rendering, and
+  raw-data tracking safety.
 
 ## Definition of Done
 

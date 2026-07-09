@@ -67,3 +67,24 @@ def test_train_command_exposes_real_options(capsys) -> None:  # type: ignore[no-
     assert "--config" in captured.out
     assert "--folds" in captured.out
     assert "--overwrite" in captured.out
+
+
+def test_figures_command_exposes_real_options(capsys) -> None:  # type: ignore[no-untyped-def]
+    with pytest.raises(SystemExit) as exc_info:
+        main(["figures", "--help"])
+
+    captured = capsys.readouterr()
+    assert exc_info.value.code == 0
+    assert "--figures-dir" in captured.out
+    assert "--tables-dir" in captured.out
+
+
+def test_report_command_exposes_real_options(capsys) -> None:  # type: ignore[no-untyped-def]
+    with pytest.raises(SystemExit) as exc_info:
+        main(["report", "--help"])
+
+    captured = capsys.readouterr()
+    assert exc_info.value.code == 0
+    assert "--source" in captured.out
+    assert "--bibliography" in captured.out
+    assert "--output" in captured.out

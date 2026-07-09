@@ -17,6 +17,11 @@ from ksas_xrocket.config import (
     path_config_value,
 )
 from ksas_xrocket.prepare import DEFAULT_TARGET_LENGTH, PreparationError, prepare_ksas_tensors
+from ksas_xrocket.reporting import (
+    ReportBuildError,
+    build_report_pdf,
+    prepare_report_artifacts,
+)
 from ksas_xrocket.robustness import (
     DEFAULT_SEEDS,
     DEFAULT_WARNING_THRESHOLDS,
@@ -52,8 +57,6 @@ DEFAULT_CONTROLS_DIR = Path("results/controls/m7_raw_padded")
 DEFAULT_STABILITY_DIR = Path("results/stability/m7_raw_padded")
 
 _PLACEHOLDERS = {
-    "figures": "M4-M8 report figure generation",
-    "report": "M8 technical report build",
     "reproduce": "M8 full reproduction workflow",
 }
 
@@ -236,6 +239,66 @@ def build_parser() -> argparse.ArgumentParser:
         help="Explicitly replace non-empty M7 output directories.",
     )
     robustness_parser.set_defaults(command="robustness")
+
+    figures_parser = subparsers.add_parser(
+        "figures",
+        help="Validate and collect final report figures and table sources.",
+    )
+    figures_parser.add_argument(
+        "--figures-dir",
+        type=Path,
+        default=Path("reports/figures"),
+        help="Output directory for curated report figures.",
+    )
+    figures_parser.add_argument(
+        "--tables-dir",
+        type=Path,
+        default=Path("reports/tables"),
+        help="Output directory for compact report table sources.",
+    )
+    figures_parser.add_argument(
+        "--manifest",
+        type=Path,
+        default=Path("reports/report_artifacts_manifest.md"),
+        help="Output manifest documenting copied report artifacts.",
+    )
+    figures_parser.set_defaults(command="figures")
+
+    report_parser = subparsers.add_parser(
+        "report",
+        help="Build the final M8 technical report PDF with Pandoc.",
+    )
+    report_parser.add_argument(
+        "--source",
+        type=Path,
+        default=Path("reports/technical_report.md"),
+        help="Markdown report source.",
+    )
+    report_parser.add_argument(
+        "--bibliography",
+        type=Path,
+        default=Path("reports/references.bib"),
+        help="BibTeX bibliography used by Pandoc citeproc.",
+    )
+    report_parser.add_argument(
+        "--output",
+        type=Path,
+        default=Path("reports/ksas_xrocket_hmc_report.pdf"),
+        help="Final report PDF path.",
+    )
+    report_parser.add_argument(
+        "--figures-dir",
+        type=Path,
+        default=Path("reports/figures"),
+        help="Report figure workspace.",
+    )
+    report_parser.add_argument(
+        "--tables-dir",
+        type=Path,
+        default=Path("reports/tables"),
+        help="Report table/source workspace.",
+    )
+    report_parser.set_defaults(command="report")
 
     for command, milestone in _PLACEHOLDERS.items():
         subparser = subparsers.add_parser(command, help=f"Placeholder for {milestone}.")
@@ -821,6 +884,41 @@ def main(argv: Sequence[str] | None = None) -> int:
         print(f"Controls summary: {robustness_result.controls_summary_path}")
         print(f"Stability summary: {robustness_result.stability_summary_path}")
         print(f"Control flags: {robustness_result.control_flags_path}")
+        return 0
+
+    if args.command == "figures":
+        try:
+            artifacts_result = prepare_report_artifacts(
+                figures_dir=args.figures_dir,
+                tables_dir=args.tables_dir,
+                manifest_path=args.manifest,
+            )
+        except ReportBuildError as exc:
+            print(str(exc))
+            return 1
+
+        print("M8 report artifacts prepared.")
+        print(f"Figures: {artifacts_result.figures_dir} ({artifacts_result.figure_count})")
+        print(f"Tables: {artifacts_result.tables_dir} ({artifacts_result.table_count})")
+        print(f"Manifest: {artifacts_result.manifest_path}")
+        return 0
+
+    if args.command == "report":
+        try:
+            report_result = build_report_pdf(
+                report_source=args.source,
+                bibliography=args.bibliography,
+                output_pdf=args.output,
+                figures_dir=args.figures_dir,
+                tables_dir=args.tables_dir,
+            )
+        except ReportBuildError as exc:
+            print(str(exc))
+            return 1
+
+        print("M8 technical report built.")
+        print(f"PDF: {report_result.pdf_path}")
+        print(f"Artifact manifest: {report_result.artifact_manifest_path}")
         return 0
 
     milestone = _PLACEHOLDERS[args.command]

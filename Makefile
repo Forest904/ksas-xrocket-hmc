@@ -1,4 +1,4 @@
-.PHONY: install lint format-check typecheck test smoke data audit baseline train explain robustness figures report reproduce
+.PHONY: install lint format-check typecheck test smoke data audit baseline train explain robustness figures report reproduce verify-submission
 
 install:
 	uv sync
@@ -42,7 +42,10 @@ robustness:
 figures:
 	uv run hmc figures
 
-report:
+report: figures
 	uv run hmc report
 
 reproduce: lint format-check typecheck test smoke
+
+verify-submission: reproduce report
+	git ls-files data/raw

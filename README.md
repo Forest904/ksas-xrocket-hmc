@@ -82,7 +82,7 @@ Main evaluation metrics include:
 - XROCKET, pinned to the audited `dida-do/xrocket` Git revision
 - Matplotlib
 - JupyterLab
-- Quarto and LaTeX
+- Pandoc and MiKTeX/pdflatex for the final PDF report
 - pytest, Ruff, mypy, pre-commit
 - GitHub Actions
 
@@ -114,7 +114,7 @@ Reusable code belongs in `src/`. Notebooks are used for exploration and result i
 ## Installation
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/Forest904/ksas-xrocket-hmc.git
 cd ksas-xrocket-hmc
 uv sync
 ```
@@ -196,6 +196,33 @@ The intended reproduction command is:
 ```bash
 make reproduce
 ```
+
+`make reproduce` runs the locked quality and smoke gate: Ruff, formatting
+check, mypy, pytest, import checks, CLI version, XROCKET import, and a prepare
+smoke run. The full artifact rebuild sequence is documented in
+[`docs/reproducibility.md`](docs/reproducibility.md). Existing result
+directories are protected by overwrite checks, so full reruns require explicit
+`--overwrite` flags when replacing committed artifacts.
+
+The final report is built with Pandoc and MiKTeX/pdflatex:
+
+```bash
+make figures
+make report
+```
+
+The final PDF is written to `reports/ksas_xrocket_hmc_report.pdf`.
+
+## Repository and licensing status
+
+Final repository URL:
+<https://github.com/Forest904/ksas-xrocket-hmc.git>
+
+Raw KSAS participant CSVs are not committed. The selected XROCKET dependency is
+pinned to `dida-do/xrocket` commit
+`1511e810c59d0c42f6431ef2f1f9fa57c71e9b2f` for course-authorized academic use;
+the public upstream repository had no public license file during this project.
+No new repository license is added for this submission.
 
 ---
 

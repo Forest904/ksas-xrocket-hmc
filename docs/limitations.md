@@ -6,9 +6,9 @@ Initial M0 limitations:
   pinned by commit, but the public upstream repository contains no license
   file. The project records attribution and does not claim a general
   open-source license for that code.
-- Explanation, figure, and report workflow commands remain placeholders until
-  their relevant milestones implement them.
-- Quarto and LaTeX/TinyTeX availability has not yet been validated.
+- Figure and report workflow commands are implemented for M8 through Pandoc and
+  MiKTeX/pdflatex. Quarto remains out of the critical path because it was not
+  installed in the final local environment.
 
 M1 data limitations:
 
