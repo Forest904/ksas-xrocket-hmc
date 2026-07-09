@@ -1,0 +1,11 @@
+flag,triggered,observed,threshold,message
+label_shuffle_mean_macro_f1,False,0.16054252190030893,0.25,Label-shuffle mean macro F1 exceeds threshold
+label_shuffle_max_macro_f1,False,0.3150588102987484,0.4,Any label-shuffle fold/seed macro F1 exceeds threshold
+metadata_mean_macro_f1,False,0.21582047178877167,0.3,Metadata-only control exceeds threshold
+rank_correlation_min,True,0.5,0.75,Seed/fold explanation rank correlation below threshold
+sensor_family_top_rank_changed,False,False,top group should be stable for strong claims,Top sensor_family changed across seed/fold cases
+axis_top_rank_changed,False,False,top group should be stable for strong claims,Top axis changed across seed/fold cases
+channel_top_rank_changed,True,True,top group should be stable for strong claims,Top channel changed across seed/fold cases
+dilation_top_rank_changed,False,False,top group should be stable for strong claims,Top dilation changed across seed/fold cases
+temporal_scale_bin_top_rank_changed,False,False,top group should be stable for strong claims,Top temporal_scale_bin changed across seed/fold cases
+movement_specific_weakness,True,class_2_recall_0.750;class_3_recall_0.775,0.8,At least one movement class has low recall

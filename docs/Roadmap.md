@@ -446,6 +446,8 @@ The roadmap is implementation-facing. It defines what to build first, what evide
 
 ## M7: Robustness, Confounds, and Negative Controls
 
+**Status:** Complete as of 2026-07-09.
+
 **Objective:** Stress-test the main findings enough to make the final report scientifically defensible.
 
 **Ordered checklist:**
@@ -473,8 +475,35 @@ The roadmap is implementation-facing. It defines what to build first, what evide
 
 **Blocking decisions:**
 
-- If controls suggest leakage or a severe confound, pause report polishing and fix the evaluation design.
-- If results are unstable, decide whether to report instability as a core finding or reduce claim strength in the final conclusions.
+- Resolved: controls do not require pausing report polishing for leakage or
+  severe confounding. Participant overlap checks pass in all folds,
+  label-shuffle controls stay below the configured leakage thresholds, and
+  metadata controls stay below the configured confound threshold.
+- Resolved: report instability as a qualifier, not as a design blocker.
+  Sensor-family, pooled-axis, dilation, and temporal-scale leaders are stable,
+  while individual-channel ranks and arm-specific axis rankings require weaker
+  claims and explicit caveats.
+
+**Completed outputs:**
+
+- Added `hmc robustness` and `configs/robustness/m7_raw_padded.yaml`.
+- Generated label-shuffle negative controls, metadata baselines, leakage
+  checks, confound summaries, flags, provenance, and a summary under
+  `results/controls/m7_raw_padded/`.
+- Generated seed-to-seed classifier stability, explanation-rank stability,
+  arm-stratified axis comparisons, per-class error summaries, provenance, and
+  a summary under `results/stability/m7_raw_padded/`.
+- Label-shuffle controls stayed below leakage thresholds: strongest mean macro
+  F1 `0.1605`, maximum fold/seed macro F1 `0.3151`.
+- Metadata controls stayed below the confound threshold: strongest mean macro
+  F1 `0.2158`.
+- Seed-stability checks retained the main explanation leaders: gravity,
+  pooled device-frame `z`, dilation `6`, and long temporal scale.
+- Triggered caveats for channel-level top-rank instability, arm-specific axis
+  differences, and weaker recalls for labels `2` (`0.7500`) and `3`
+  (`0.7750`).
+- Updated `docs/methodology.md`, `docs/limitations.md`, and
+  `docs/decision-log.md`.
 
 ## M8: Report Generation, Reproduction Check, and Final Submission
 

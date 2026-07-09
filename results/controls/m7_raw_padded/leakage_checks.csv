@@ -1,0 +1,6 @@
+fold,train_sample_count,test_sample_count,train_participant_count,test_participant_count,participant_overlap_count,participant_overlap,train_has_all_classes,test_has_all_classes,status
+0,192,48,16,4,0,,True,True,pass
+1,192,48,16,4,0,,True,True,pass
+2,192,48,16,4,0,,True,True,pass
+3,192,48,16,4,0,,True,True,pass
+4,192,48,16,4,0,,True,True,pass

@@ -17,6 +17,12 @@ from ksas_xrocket.config import (
     path_config_value,
 )
 from ksas_xrocket.prepare import DEFAULT_TARGET_LENGTH, PreparationError, prepare_ksas_tensors
+from ksas_xrocket.robustness import (
+    DEFAULT_SEEDS,
+    DEFAULT_WARNING_THRESHOLDS,
+    RobustnessError,
+    run_robustness_analysis,
+)
 from ksas_xrocket.splits import SplitError, generate_grouped_splits
 from ksas_xrocket.task_1_1_explain import (
     Task11ExplanationError,
@@ -42,6 +48,8 @@ DEFAULT_XROCKET_DIR = Path("results/xrocket/m3_raw_padded")
 DEFAULT_TASK_1_1_DIR = Path("results/explanations/task_1_1")
 DEFAULT_TASK_1_2_DIR = Path("results/explanations/task_1_2")
 DEFAULT_TASK_1_3_DIR = Path("results/explanations/task_1_3")
+DEFAULT_CONTROLS_DIR = Path("results/controls/m7_raw_padded")
+DEFAULT_STABILITY_DIR = Path("results/stability/m7_raw_padded")
 
 _PLACEHOLDERS = {
     "figures": "M4-M8 report figure generation",
@@ -211,6 +219,23 @@ def build_parser() -> argparse.ArgumentParser:
         help="Explicitly replace a non-empty explanation output directory.",
     )
     explain_parser.set_defaults(command="explain")
+
+    robustness_parser = subparsers.add_parser(
+        "robustness",
+        help="Run M7 robustness, confound, and negative-control analyses.",
+    )
+    robustness_parser.add_argument("--config", type=Path, default=None)
+    robustness_parser.add_argument("--processed-dir", type=Path, default=None)
+    robustness_parser.add_argument("--splits-dir", type=Path, default=None)
+    robustness_parser.add_argument("--xrocket-dir", type=Path, default=None)
+    robustness_parser.add_argument("--controls-output-dir", type=Path, default=None)
+    robustness_parser.add_argument("--stability-output-dir", type=Path, default=None)
+    robustness_parser.add_argument(
+        "--overwrite",
+        action="store_true",
+        help="Explicitly replace non-empty M7 output directories.",
+    )
+    robustness_parser.set_defaults(command="robustness")
 
     for command, milestone in _PLACEHOLDERS.items():
         subparser = subparsers.add_parser(command, help=f"Placeholder for {milestone}.")
@@ -711,6 +736,93 @@ def main(argv: Sequence[str] | None = None) -> int:
         print(f"Provenance: {task11_result.provenance_path}")
         return 0
 
+    if args.command == "robustness":
+        try:
+            config = load_yaml_config(args.config)
+            rf_config = nested_mapping(config, "random_forest")
+            logistic_config = nested_mapping(config, "logistic_regression")
+            processed_dir = args.processed_dir or path_config_value(
+                config,
+                "processed_dir",
+                DEFAULT_PROCESSED_DIR,
+            )
+            splits_dir = args.splits_dir or path_config_value(
+                config,
+                "splits_dir",
+                DEFAULT_SPLITS_DIR,
+            )
+            xrocket_dir = args.xrocket_dir or path_config_value(
+                config,
+                "xrocket_dir",
+                DEFAULT_XROCKET_DIR,
+            )
+            controls_output_dir = args.controls_output_dir or path_config_value(
+                config,
+                "controls_output_dir",
+                DEFAULT_CONTROLS_DIR,
+            )
+            stability_output_dir = args.stability_output_dir or path_config_value(
+                config,
+                "stability_output_dir",
+                DEFAULT_STABILITY_DIR,
+            )
+            label_ids = label_ids_from_config(config)
+            seeds = seeds_from_config(config)
+            warning_thresholds = warning_thresholds_from_config(config)
+            primary_model = str(config.get("primary_model", "xrocket_random_forest"))
+            random_forest_estimators = int_config_value(rf_config, "n_estimators", 500)
+            logistic_max_iter = int_config_value(logistic_config, "max_iter", 2000)
+            resolved_config = {
+                "config": args.config.as_posix() if args.config is not None else None,
+                "processed_dir": processed_dir.as_posix(),
+                "splits_dir": splits_dir.as_posix(),
+                "xrocket_dir": xrocket_dir.as_posix(),
+                "controls_output_dir": controls_output_dir.as_posix(),
+                "stability_output_dir": stability_output_dir.as_posix(),
+                "classes": list(label_ids),
+                "seeds": list(seeds),
+                "primary_model": primary_model,
+                "random_forest": {
+                    "n_estimators": random_forest_estimators,
+                    "class_weight": "balanced",
+                    "max_features": "sqrt",
+                    "n_jobs": -1,
+                },
+                "logistic_regression": {
+                    "max_iter": logistic_max_iter,
+                    "penalty": "l2",
+                    "standardize": True,
+                },
+                "warning_thresholds": warning_thresholds,
+                "encoder_reruns": "not performed in M7 report-safe workflow",
+            }
+            robustness_result = run_robustness_analysis(
+                processed_dir=processed_dir,
+                splits_dir=splits_dir,
+                xrocket_dir=xrocket_dir,
+                controls_output_dir=controls_output_dir,
+                stability_output_dir=stability_output_dir,
+                label_ids=label_ids,
+                seeds=seeds,
+                primary_model=primary_model,
+                random_forest_estimators=random_forest_estimators,
+                logistic_max_iter=logistic_max_iter,
+                warning_thresholds=warning_thresholds,
+                overwrite=args.overwrite,
+                resolved_config=resolved_config,
+            )
+        except (ConfigError, RobustnessError, BaselineError, TypeError, ValueError) as exc:
+            print(str(exc))
+            return 1
+
+        print("M7 robustness analysis completed.")
+        print(f"Controls: {robustness_result.controls_output_dir}")
+        print(f"Stability: {robustness_result.stability_output_dir}")
+        print(f"Controls summary: {robustness_result.controls_summary_path}")
+        print(f"Stability summary: {robustness_result.stability_summary_path}")
+        print(f"Control flags: {robustness_result.control_flags_path}")
+        return 0
+
     milestone = _PLACEHOLDERS[args.command]
     print(f"`hmc {args.command}` is reserved for {milestone}; no data or model work runs in M0.")
     return 0
@@ -744,6 +856,35 @@ def folds_from_config(
     if len(set(folds)) != len(folds) or any(fold < 0 for fold in folds):
         raise ConfigError("Config field 'folds' must contain unique non-negative integers")
     return folds
+
+
+def seeds_from_config(config: dict[str, object]) -> tuple[int, ...]:
+    """Return configured M7 seed values."""
+    values = config.get("seeds", list(DEFAULT_SEEDS))
+    if not isinstance(values, list) or not values:
+        raise ConfigError("Config field 'seeds' must be a non-empty list")
+    try:
+        seeds = tuple(int(value) for value in values)
+    except (TypeError, ValueError) as exc:
+        raise ConfigError("Config field 'seeds' must contain integers") from exc
+    if len(set(seeds)) != len(seeds):
+        raise ConfigError("Config field 'seeds' must contain unique integers")
+    return seeds
+
+
+def warning_thresholds_from_config(config: dict[str, object]) -> dict[str, float]:
+    """Return configured M7 warning thresholds merged with defaults."""
+    values = config.get("warning_thresholds", {})
+    if not isinstance(values, dict):
+        raise ConfigError("Config field 'warning_thresholds' must be a mapping")
+    thresholds = dict(DEFAULT_WARNING_THRESHOLDS)
+    for key, value in values.items():
+        if key not in thresholds:
+            raise ConfigError(f"Unknown warning threshold: {key}")
+        if isinstance(value, bool) or not isinstance(value, int | float):
+            raise ConfigError(f"Warning threshold {key!r} must be numeric")
+        thresholds[str(key)] = float(value)
+    return thresholds
 
 
 def default_explanation_dir(task_name: str) -> Path:

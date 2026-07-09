@@ -1,0 +1,32 @@
+{
+  "controls_output_dir": "results/controls/m7_raw_padded",
+  "folds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "git_commit": "dceed7ef00a1408bfea9c456d5a74c2b52f6bd8b",
+  "packages": {
+    "joblib": "1.5.3",
+    "numpy": "2.4.6",
+    "pandas": "3.0.3",
+    "pyarrow": "24.0.0",
+    "scikit-learn": "1.9.0"
+  },
+  "processed_dir": "data/processed/ksas_m2_raw_padded",
+  "seeds": [
+    7,
+    13,
+    29,
+    42,
+    101
+  ],
+  "split_manifest": "data/manifests/splits/m2_grouped_folds.csv",
+  "split_manifest_sha256": "5596f3494e154ee60d9be455e3fc7783804d01afa996fca2c045c1538af408d7",
+  "stability_output_dir": "results/stability/m7_raw_padded",
+  "tensor_sha256": "27598490ed9b086d40a17f483c509a65b97d821289e048e5cabf7a848cda88ef",
+  "xrocket_dir": "results/xrocket/m3_raw_padded",
+  "xrocket_provenance_sha256": "180f9d4668c77352ea9afee3970eb77d6bcdeca573f0212450247da962e23d83"
+}

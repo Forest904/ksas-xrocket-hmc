@@ -1,0 +1,21 @@
+processed_dir: data/processed/ksas_m2_raw_padded
+splits_dir: data/manifests/splits
+xrocket_dir: results/xrocket/m3_raw_padded
+controls_output_dir: results/controls/m7_raw_padded
+stability_output_dir: results/stability/m7_raw_padded
+classes: [0, 1, 2, 3, 4, 5]
+seeds: [7, 13, 29, 42, 101]
+primary_model: xrocket_random_forest
+
+random_forest:
+  n_estimators: 500
+
+logistic_regression:
+  max_iter: 2000
+
+warning_thresholds:
+  label_shuffle_mean_macro_f1: 0.25
+  label_shuffle_max_macro_f1: 0.40
+  metadata_mean_macro_f1: 0.30
+  rank_correlation_min: 0.75
+  class_recall_min: 0.80

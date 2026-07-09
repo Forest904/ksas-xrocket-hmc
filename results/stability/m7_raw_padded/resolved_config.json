@@ -1,0 +1,43 @@
+{
+  "classes": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "config": "configs/robustness/m7_raw_padded.yaml",
+  "controls_output_dir": "results/controls/m7_raw_padded",
+  "encoder_reruns": "not performed in M7 report-safe workflow",
+  "logistic_regression": {
+    "max_iter": 2000,
+    "penalty": "l2",
+    "standardize": true
+  },
+  "primary_model": "xrocket_random_forest",
+  "processed_dir": "data/processed/ksas_m2_raw_padded",
+  "random_forest": {
+    "class_weight": "balanced",
+    "max_features": "sqrt",
+    "n_estimators": 500,
+    "n_jobs": -1
+  },
+  "seeds": [
+    7,
+    13,
+    29,
+    42,
+    101
+  ],
+  "splits_dir": "data/manifests/splits",
+  "stability_output_dir": "results/stability/m7_raw_padded",
+  "warning_thresholds": {
+    "class_recall_min": 0.8,
+    "label_shuffle_max_macro_f1": 0.4,
+    "label_shuffle_mean_macro_f1": 0.25,
+    "metadata_mean_macro_f1": 0.3,
+    "rank_correlation_min": 0.75
+  },
+  "xrocket_dir": "results/xrocket/m3_raw_padded"
+}

@@ -1,4 +1,4 @@
-.PHONY: install lint format-check typecheck test smoke data audit baseline train explain figures report reproduce
+.PHONY: install lint format-check typecheck test smoke data audit baseline train explain robustness figures report reproduce
 
 install:
 	uv sync
@@ -35,6 +35,9 @@ train:
 
 explain:
 	uv run hmc explain
+
+robustness:
+	uv run hmc robustness --config configs/robustness/m7_raw_padded.yaml
 
 figures:
 	uv run hmc figures

@@ -96,3 +96,29 @@ M6 Task 1.3 limitations:
 - Pattern interpretations remain in Android device coordinates and cannot
   establish muscle activation, joint mechanics, force, expertise, coaching
   quality, or learning gains.
+
+M7 robustness limitations:
+
+- M7 seed stability retrains classifiers on saved XROCKET features but does
+  not rerun the XROCKET encoder or refit encoder thresholds across seeds. Full
+  encoder variability remains future work.
+- Label-shuffle controls stayed below the configured leakage thresholds: the
+  strongest mean macro F1 was `0.1605`, with maximum fold/seed macro F1
+  `0.3151`. This does not prove leakage is impossible, but it found no obvious
+  label leakage in the saved grouped evaluation setup.
+- Metadata controls using sequence length, padding fraction, and arm code
+  stayed below the configured confound threshold: the strongest mean macro F1
+  was `0.2158`. Sequence length differs by up to `6.65` samples across labels,
+  so it remains a documented weak confound risk rather than an explanation for
+  the main XROCKET result.
+- Seed-stability checks found stable top sensor-family, pooled-axis, dilation,
+  and temporal-scale rankings, but channel-level top ranks changed across
+  seed/fold cases. The final report should make stronger claims at family,
+  axis, and temporal-scale levels than at individual-channel level.
+- Arm-stratified axis rankings differ: right-arm code `d` ranks device-frame
+  `x` highest on average, while left-arm code `i` ranks `z` highest. Pooled
+  axis claims must include an arm-orientation caveat.
+- Primary random-forest per-class recall is weakest for labels `2` and `3`
+  (`0.7500` and `0.7750`). These movement-specific weaknesses should be
+  reported directly, especially because labels `2` and `3` are confused with
+  each other.

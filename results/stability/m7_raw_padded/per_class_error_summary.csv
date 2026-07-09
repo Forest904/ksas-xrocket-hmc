@@ -1,0 +1,7 @@
+model,class_label,support,correct_count,recall,precision,top_confused_as,top_confused_count
+xrocket_random_forest,0,40,40,1.0,0.975609756097561,,0
+xrocket_random_forest,1,40,37,0.925,0.9736842105263158,3,1
+xrocket_random_forest,2,40,30,0.75,0.7894736842105263,3,5
+xrocket_random_forest,3,40,31,0.775,0.775,2,2
+xrocket_random_forest,4,40,37,0.925,0.925,5,2
+xrocket_random_forest,5,40,37,0.925,0.8604651162790697,2,2
