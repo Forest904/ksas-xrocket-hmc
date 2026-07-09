@@ -31,3 +31,41 @@ interpretations, speculative ideas, and unsupported claims.
 - KSAS application instructions and bundled `wearable.jpg`.
 - KSAS Android sensor-registration and export source.
 - Dataset README and the local M1 audit.
+
+## M4 Task 1.1 Interpretation
+
+The M4 sensor-axis evidence is stored in `results/explanations/task_1_1/`.
+Native random-forest importance ranks gravity highest among sensor families
+(`0.2000 +/- 0.0103` normalized fold importance), followed by gyroscope
+(`0.1748 +/- 0.0048`), accelerometer (`0.1676 +/- 0.0036`), game rotation
+vector (`0.1661 +/- 0.0037`), magnetic field (`0.1535 +/- 0.0049`), and linear
+acceleration (`0.1379 +/- 0.0057`). The device-frame `z` axis is highest
+(`0.3472 +/- 0.0082`), with `y` (`0.3292 +/- 0.0073`) and `x`
+(`0.3236 +/- 0.0027`) close behind.
+
+The strongest native channels are `gravity_z`, `gravity_x`, `gravity_y`,
+`gyros_x`, `game_rot_vec_z`, and `accelerometer_z`. This suggests that the
+classifier relies heavily on forearm orientation relative to gravity, angular
+velocity, orientation-related rotation-vector structure, and acceleration
+patterns. In movement terms, these are plausible correlates of block direction,
+forearm rotation, and end-position or transition differences between the Kenpo
+blocks.
+
+This is an evidence-supported interpretation, not a direct anatomical
+measurement. The axes remain Android device-frame axes; the intended forearm
+mount supports cautious interpretation, but no participant-specific anatomical
+calibration was recorded. Because both arms are included, left/right mirroring
+can change anatomical meaning even when the device-axis channel name is the
+same. The report should therefore phrase these findings as device-channel
+contributions and use arm-stratified diagnostics before promoting any
+arm-specific biomechanical claim.
+
+Validation is mixed. Grouped permutation supports gravity as the largest
+sensor-family drop and also gives positive evidence for game rotation vector,
+gyroscope, accelerometer, magnetic field, and linear acceleration. Feature-group
+ablation, however, shows very small or negative mean macro-F1 drops, suggesting
+that other transformed features can compensate when a group is removed and the
+random forest is retrained. The safest biomechanical statement is therefore:
+gravity and related orientation/rotation channels are consistently associated
+with classification, while ablation does not prove that any single raw sensor
+family is strictly necessary.

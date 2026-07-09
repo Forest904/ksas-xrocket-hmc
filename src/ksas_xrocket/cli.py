@@ -18,6 +18,10 @@ from ksas_xrocket.config import (
 )
 from ksas_xrocket.prepare import DEFAULT_TARGET_LENGTH, PreparationError, prepare_ksas_tensors
 from ksas_xrocket.splits import SplitError, generate_grouped_splits
+from ksas_xrocket.task_1_1_explain import (
+    Task11ExplanationError,
+    run_task_1_1_explanation,
+)
 from ksas_xrocket.xrocket_adapter import XRocketAdapterError
 from ksas_xrocket.xrocket_experiment import XRocketExperimentError, run_xrocket_experiment
 
@@ -26,9 +30,9 @@ DEFAULT_PROCESSED_DIR = Path("data/processed/ksas_m2_raw_padded")
 DEFAULT_SPLITS_DIR = Path("data/manifests/splits")
 DEFAULT_BASELINE_DIR = Path("results/baselines/m2_raw_padded")
 DEFAULT_XROCKET_DIR = Path("results/xrocket/m3_raw_padded")
+DEFAULT_TASK_1_1_DIR = Path("results/explanations/task_1_1")
 
 _PLACEHOLDERS = {
-    "explain": "M4-M6 explanation analyses",
     "figures": "M4-M8 report figure generation",
     "report": "M8 technical report build",
     "reproduce": "M8 full reproduction workflow",
@@ -180,6 +184,22 @@ def build_parser() -> argparse.ArgumentParser:
         help="Explicitly replace a non-empty output directory.",
     )
     train_parser.set_defaults(command="train")
+
+    explain_parser = subparsers.add_parser(
+        "explain",
+        help="Generate M4-M6 explanation analyses.",
+    )
+    explain_parser.add_argument("--config", type=Path, default=None)
+    explain_parser.add_argument("--processed-dir", type=Path, default=None)
+    explain_parser.add_argument("--xrocket-dir", type=Path, default=None)
+    explain_parser.add_argument("--output-dir", type=Path, default=None)
+    explain_parser.add_argument("--random-state", type=int, default=None)
+    explain_parser.add_argument(
+        "--overwrite",
+        action="store_true",
+        help="Explicitly replace a non-empty explanation output directory.",
+    )
+    explain_parser.set_defaults(command="explain")
 
     for command, milestone in _PLACEHOLDERS.items():
         subparser = subparsers.add_parser(command, help=f"Placeholder for {milestone}.")
@@ -469,6 +489,93 @@ def main(argv: Sequence[str] | None = None) -> int:
         print(f"Confusion matrices: {xrocket_result.confusion_matrices_path}")
         print(f"Runtime: {xrocket_result.runtime_path}")
         print(f"Provenance: {xrocket_result.provenance_path}")
+        return 0
+
+    if args.command == "explain":
+        try:
+            config = load_yaml_config(args.config)
+            task_name = str(config.get("task", "task_1_1"))
+            if task_name != "task_1_1":
+                raise ConfigError(f"Unsupported explanation task: {task_name}")
+            validation_config = nested_mapping(config, "validation")
+            models_config = nested_mapping(config, "models")
+            rf_config = nested_mapping(models_config, "random_forest")
+            processed_dir = args.processed_dir or path_config_value(
+                config,
+                "processed_dir",
+                DEFAULT_PROCESSED_DIR,
+            )
+            xrocket_dir = args.xrocket_dir or path_config_value(
+                config,
+                "xrocket_dir",
+                DEFAULT_XROCKET_DIR,
+            )
+            output_dir = args.output_dir or path_config_value(
+                config,
+                "output_dir",
+                DEFAULT_TASK_1_1_DIR,
+            )
+            random_state = (
+                args.random_state
+                if args.random_state is not None
+                else int_config_value(config, "random_state", 42)
+            )
+            label_ids = label_ids_from_config(config)
+            random_forest_estimators = int_config_value(rf_config, "n_estimators", 500)
+            permutation_repeats = int_config_value(
+                validation_config,
+                "permutation_repeats",
+                5,
+            )
+            top_k = int_config_value(validation_config, "top_k", 3)
+            resolved_config = {
+                "config": args.config.as_posix() if args.config is not None else None,
+                "task": task_name,
+                "processed_dir": processed_dir.as_posix(),
+                "xrocket_dir": xrocket_dir.as_posix(),
+                "output_dir": output_dir.as_posix(),
+                "classes": list(label_ids),
+                "random_state": random_state,
+                "validation": {
+                    "group_levels": validation_config.get(
+                        "group_levels",
+                        ["sensor_family", "channel"],
+                    ),
+                    "permutation_repeats": permutation_repeats,
+                    "top_k": top_k,
+                },
+                "models": {
+                    "random_forest": {
+                        "n_estimators": random_forest_estimators,
+                        "class_weight": "balanced",
+                        "max_features": "sqrt",
+                        "n_jobs": -1,
+                    }
+                },
+            }
+            explanation_result = run_task_1_1_explanation(
+                processed_dir=processed_dir,
+                xrocket_dir=xrocket_dir,
+                output_dir=output_dir,
+                label_ids=label_ids,
+                random_state=random_state,
+                random_forest_estimators=random_forest_estimators,
+                permutation_repeats=permutation_repeats,
+                top_k=top_k,
+                overwrite=args.overwrite,
+                resolved_config=resolved_config,
+            )
+        except (ConfigError, BaselineError, Task11ExplanationError, TypeError, ValueError) as exc:
+            print(str(exc))
+            return 1
+
+        print("Task 1.1 explanation analysis completed.")
+        print(f"Native importance: {explanation_result.native_importance_path}")
+        print(f"Ablation metrics: {explanation_result.ablation_path}")
+        print(f"Permutation importance: {explanation_result.permutation_path}")
+        print(f"Method agreement: {explanation_result.method_agreement_path}")
+        print(f"Answer draft: {explanation_result.answer_path}")
+        print(f"Provenance: {explanation_result.provenance_path}")
         return 0
 
     milestone = _PLACEHOLDERS[args.command]

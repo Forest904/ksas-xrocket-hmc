@@ -37,3 +37,28 @@ M3 limitations:
   tensors; this local correction is tested but remains tied to the pinned
   upstream revision.
 - Approximate seconds use nominal 50 Hz rather than measured timestamps.
+
+M4 Task 1.1 limitations:
+
+- Sensor-axis rankings describe the saved padded M3 XROCKET representation, not
+  a padding-independent or raw-sensor-only model.
+- Random-forest impurity importance can favor features with convenient split
+  structure. M4 therefore compares native importance with feature-group
+  ablation and grouped permutation, but those methods answer different
+  questions.
+- Feature-group ablation removes saved transformed features and retrains the
+  random forest. It does not rerun XROCKET with raw sensors removed and should
+  not be described as proof that a raw sensor is or is not physically necessary.
+- M4 ablation produced very small or negative mean macro-F1 drops at the sensor
+  family level, while permutation produced positive drops led by gravity. This
+  conflict suggests redundancy and compensation in the transformed feature
+  bank; claims should emphasize agreement between native importance and
+  permutation, and treat ablation as a redundancy check.
+- Class-specific profiles are one-vs-rest random-forest explanations fitted on
+  transformed features. They are useful diagnostics, but they are not native
+  class-specific explanations from the original multiclass random forest.
+- Only five participant-held-out folds are available, so uncertainty estimates
+  are descriptive rather than inferentially strong.
+- All biomechanical interpretation remains device-frame based. No anatomical
+  coordinate transform, participant-specific phone placement check, or
+  arm-orientation calibration is available.

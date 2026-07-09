@@ -1,0 +1,22 @@
+task: task_1_1
+experiment: task_1_1_xrocket_raw_padded
+processed_dir: data/processed/ksas_m2_raw_padded
+xrocket_dir: results/xrocket/m3_raw_padded
+output_dir: results/explanations/task_1_1
+classes: [0, 1, 2, 3, 4, 5]
+random_state: 42
+
+validation:
+  group_levels: [sensor_family, channel]
+  permutation_repeats: 5
+  top_k: 3
+
+class_specific:
+  enabled: true
+
+models:
+  random_forest:
+    n_estimators: 500
+    class_weight: balanced
+    max_features: sqrt
+    n_jobs: -1

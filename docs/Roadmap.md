@@ -263,6 +263,8 @@ The roadmap is implementation-facing. It defines what to build first, what evide
 
 ## M4: Task 1.1 Sensor-Axis Contribution Analysis
 
+**Status:** Complete as of 2026-07-09.
+
 **Objective:** Answer Task 1.1: which sensor signals contribute most to classify user movement and how findings relate to movement biomechanics.
 
 **Ordered checklist:**
@@ -298,6 +300,26 @@ The roadmap is implementation-facing. It defines what to build first, what evide
 - Resolved: always report pooled results with arm-stratified diagnostics.
   Promote arm-specific rankings to a main result if their ordering or effect
   sizes differ materially.
+
+**Completed outputs:**
+
+- Added `hmc explain` for Task 1.1 and
+  `configs/explanations/task_1_1_xrocket_raw_padded.yaml`.
+- Generated normalized native importance, class-specific one-vs-rest profiles,
+  feature-group ablations, grouped permutation importance, method-agreement
+  tables, figures, provenance, and a report-ready answer under
+  `results/explanations/task_1_1/`.
+- Native importance ranked gravity highest among sensor families, followed by
+  gyroscope, accelerometer, game rotation vector, magnetic field, and linear
+  acceleration. Device-frame `z` ranked highest among axes.
+- Grouped permutation supported gravity as the largest sensor-family
+  performance drop. Feature-group ablation produced small or negative mean
+  macro-F1 drops, so the interpretation treats the transformed feature bank as
+  redundant rather than claiming strict raw-sensor necessity.
+- Updated `docs/methodology.md`, `docs/biomechanics.md`,
+  `docs/limitations.md`, and `docs/reproducibility.md`.
+- Added Task 1.1 tests for channel parsing, normalization, aggregation, CLI
+  smoke outputs, ablation, permutation, and figure creation.
 
 ## M5: Task 1.2 Dilations/Frequencies and Temporal-Scale Analysis
 

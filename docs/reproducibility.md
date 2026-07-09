@@ -34,6 +34,7 @@ The M2 preprocessing, baseline, and M3 model workflow is:
 uv run hmc prepare --config configs/preprocessing_m2_raw_padded.yaml
 uv run hmc baseline --config configs/baseline_m2_raw_padded.yaml
 uv run hmc train --config configs/experiments/m3_xrocket_raw_padded.yaml
+uv run hmc explain --config configs/explanations/task_1_1_xrocket_raw_padded.yaml
 ```
 
 `hmc prepare` writes padded tensors and participant-grouped split manifests.
@@ -43,6 +44,28 @@ metadata, models, metrics, predictions, confusion matrices, runtime, provenance,
 and padding diagnostics. It refuses to replace a non-empty output directory
 unless `--overwrite` is passed explicitly.
 
+`hmc explain` currently implements Task 1.1 for the M3 raw-padded XROCKET run.
+It reads the saved M3 fold artifacts, computes normalized native importance,
+class-specific one-vs-rest profiles, feature-group ablations, grouped
+permutation importance, method-agreement tables, figures, and a report-ready
+answer under `results/explanations/task_1_1/`. It also refuses to replace a
+non-empty output directory unless `--overwrite` is passed explicitly.
+
 Each M3 fold directory contains the fitted adapter and classifiers. The runner
 reloads them before completing and verifies that features and smoke-sample
 predictions are unchanged.
+
+## M4 Task 1.1 Outputs
+
+The primary Task 1.1 artifacts are:
+
+- `results/explanations/task_1_1/fold_native_importance.parquet`;
+- `results/explanations/task_1_1/*_importance_summary.csv`;
+- `results/explanations/task_1_1/class_specific_*_importance.csv`;
+- `results/explanations/task_1_1/ablation_metrics.csv`;
+- `results/explanations/task_1_1/permutation_importance.csv`;
+- `results/explanations/task_1_1/method_agreement.csv`;
+- `results/explanations/task_1_1/figures/*.{png,pdf}`;
+- `results/explanations/task_1_1/task_1_1_answer.md`;
+- `results/explanations/task_1_1/resolved_config.json`;
+- `results/explanations/task_1_1/provenance.json`.
