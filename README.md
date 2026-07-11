@@ -15,6 +15,20 @@ The final deliverable is a reproducible technical report supported by code, expe
 
 ---
 
+## Future direction
+
+This repository remains the completed academic XROCKET research artifact; it
+does not contain a mobile application, smartwatch integration, data-collection
+backend, computer-vision model, or coaching system.
+
+A separate successor project is proposed to collect timestamped phone and Wear
+OS inertial data for controlled Kenpo studies, then investigate learning
+feedback, multimodal sensing, and other sports in later research stages. See
+the [successor project proposal](docs/future-project-proposal.md) for the
+planned scope, architecture, research gates, and responsible-use boundaries.
+
+---
+
 ## Research questions
 
 - Which accelerometer, gyroscope, and magnetometer axes are most informative?

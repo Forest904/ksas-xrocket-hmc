@@ -580,12 +580,15 @@ The project is complete only when all of the following are true:
 - Raw KSAS data remain immutable and untracked.
 - A clean reproduction path has been tested or its limits are honestly documented.
 
-## Immediate Next Actions
+## Post-Project Handoff
 
-1. Move or copy `KSAS-Dataset/` into `data/raw/KSAS-Dataset/` now that `data/raw/` exists and is ignored.
-2. Record local dataset provenance and acquisition date.
-3. Run the first dataset audit and generate `data/manifests/samples.csv`.
-4. Fill `docs/data-dictionary.md` before writing preprocessing or modeling code.
-5. Record remaining measurement limits, such as realized sampling jitter and
-   participant-level placement consistency, in `docs/limitations.md` and
-   `docs/decision-log.md`.
+Milestones M0-M8 and the academic project definition of done are complete. The
+former immediate-action list described early M1 work that has already been
+completed and is therefore retired.
+
+Future mobile, Wear OS, backend, computer-vision, coaching, and multi-sport work
+does not reopen this roadmap or expand the current PRD. It belongs to a separate
+successor project. The academic motivation, proposed paired-device collector,
+logical data contracts, staged research program, and safety boundaries are
+documented in the
+[successor project proposal](future-project-proposal.md).
