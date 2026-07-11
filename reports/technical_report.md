@@ -1,10 +1,9 @@
 ---
 title: "Explainable Human Motion Computing with KSAS and XROCKET"
 author: "Luca Foresti"
-date: "20 July 2026"
+date: "11 July 2026"
 lang: en
 ---
-
 # Abstract
 
 This report applies XROCKET to the course-provided KSAS smartphone inertial
@@ -86,13 +85,13 @@ selected XROCKET representation is not the strongest classifier in the
 repository, but it is the main explainable model because it provides traceable
 channel and dilation metadata.
 
-| Model | Mean macro F1 | Mean balanced accuracy | Notes |
-|---|---:|---:|---|
-| Majority baseline | 0.048 | 0.167 | Sanity baseline |
-| Statistical logistic regression | 0.886 | 0.888 | Masked statistical features |
-| Statistical random forest | 0.909 | 0.908 | Strongest baseline |
-| XROCKET random forest | 0.883 | 0.883 | Primary explainable model |
-| XROCKET logistic regression | 0.884 | 0.883 | Sensitivity model |
+| Model                           | Mean macro F1 | Mean balanced accuracy | Notes                       |
+| ------------------------------- | ------------: | ---------------------: | --------------------------- |
+| Majority baseline               |         0.048 |                  0.167 | Sanity baseline             |
+| Statistical logistic regression |         0.886 |                  0.888 | Masked statistical features |
+| Statistical random forest       |         0.909 |                  0.908 | Strongest baseline          |
+| XROCKET random forest           |         0.883 |                  0.883 | Primary explainable model   |
+| XROCKET logistic regression     |         0.884 |                  0.883 | Sensitivity model           |
 
 The primary XROCKET random forest was weakest for labels 2 and 3, with recalls
 0.750 and 0.775. These are the hammering inward block and extended outward
@@ -102,124 +101,184 @@ block, and their mutual confusion is discussed as a limitation.
 
 ## Answer to Task 1.1
 
-The strongest stable sensor-axis evidence comes from the gravity sensor family
-and the pooled device-frame z axis. Native feature importance ranked gravity
-first among sensor families with mean normalized importance 0.200, followed by
-gyroscope at 0.175 and accelerometer at 0.168. The pooled z axis ranked first
-with mean normalized importance 0.347. At the individual-channel level,
-`gravity_z`, `gravity_x`, `gravity_y`, `gyros_x`, `game_rot_vec_z`, and
-`accelerometer_z` were among the leading channels, but channel-level claims are
-weaker because M7 showed top-channel instability across seed/fold cases.
+My answer is that the most useful signal group is gravity, and the strongest
+pooled axis is the device-frame z axis. Gravity has mean normalized importance
+0.200, ahead of gyroscope at 0.175 and accelerometer at 0.168. When I group all
+sensors by axis, z is highest at 0.347. This does not mean that only one axis
+matters, but it tells me where the model found the most stable information.
 
-![Task 1.1 sensor-family contribution. Gravity has the highest native
-importance and is also supported by grouped permutation evidence.](figures/task_1_1_sensor_family_contribution.pdf)
+Figure 1 combines the two main pieces of evidence for this answer. On the left,
+the bar chart ranks the sensor families, where gravity is clearly first. On the
+right, the heatmap shows how each family splits across the x, y, and z
+device-frame axes; the brightest gravity cell is on z. I use this panel for the
+main answer because it shows both "which sensor" and "which axis" in one place.
 
-![Task 1.1 device-frame channel and axis heatmap. Values are normalized within
-folds and should be read as relative model-use evidence.](figures/task_1_1_axis_channel_contribution_heatmap.pdf)
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.96\textwidth]{reports/figures/task_1_1_core_evidence.pdf}
+\caption{Task 1.1 core evidence. Gravity is the strongest sensor family, and the pooled device-frame z axis carries the strongest axis evidence.}
+\end{figure}
 
-![Task 1.1 class-specific channel profiles. These one-vs-rest diagnostics show
-movement-specific channel emphasis but are secondary evidence.](figures/task_1_1_class_specific_channel_profiles.pdf)
+Figure 2 is more detailed and should be read as a secondary diagnostic. It shows
+that different movement classes emphasize different channels, but I do not use
+it for the strongest claim because individual channel ranks were less stable
+than the broader family and axis results.
 
-Validation evidence is mixed but useful. Grouped test-set permutation produced
-the largest sensor-family macro-F1 drop for gravity, followed by game rotation
-vector and gyroscope. Feature-group ablation produced small or negative average
-drops, which indicates redundancy in the transformed feature bank rather than a
-simple one-sensor dependency.
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{reports/figures/task_1_1_class_specific_channel_profiles.pdf}
+\caption{Task 1.1 class-specific channel profiles. These one-vs-rest diagnostics show movement-specific channel emphasis but are secondary evidence.}
+\end{figure}
 
-![Task 1.1 ablation impact. Small and sometimes negative drops indicate
-redundancy among transformed features.](figures/task_1_1_ablation_impact.pdf)
+I checked the ranking against validation tests instead of trusting one score
+only. The grouped permutation test again points to gravity as the most important
+sensor family, followed by game rotation vector and gyroscope. The ablation
+plot is less direct: removing one feature group often causes only a small drop,
+or even a negative drop. I interpret this as redundancy. XROCKET creates many
+related transformed features, so the model can sometimes compensate when one
+group is removed.
 
-![Task 1.1 fold stability. Stable family-level findings are stronger than
-individual-channel claims.](figures/task_1_1_fold_stability.pdf)
+Figure 3 puts the validation checks together. The ablation panel is a warning
+against a simple "one sensor causes the classification" story. The stability
+panel shows why I trust broad family and axis conclusions more than claims about
+one exact channel such as `gravity_z`.
 
-Biomechanically, gravity and rotation-related evidence is plausible for blocking
-motions because the phone is worn on the forearm and the movements change
-forearm orientation and acceleration. However, all axes are Android
-device-frame axes. Without anatomical calibration, left/right mirroring checks,
-or expert-labeled movement phases, this report avoids claims about exact joint
-mechanics, muscle activation, force, or skill quality.
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.96\textwidth]{reports/figures/task_1_1_validation_checks.pdf}
+\caption{Task 1.1 validation checks. Small ablation drops indicate feature redundancy, while fold stability shows that broad conclusions are safer than individual-channel claims.}
+\end{figure}
+
+My biomechanical interpretation is cautious. The result makes sense because a
+phone on the forearm should capture changes in orientation, rotation, and
+acceleration during karate blocks. Gravity and rotation-related channels are
+therefore plausible sources of movement information. At the same time, these
+are Android device-frame axes, not anatomical axes. Without calibration to the
+body, left/right mirroring checks for every movement phase, or expert-labeled
+biomechanical phases, I should not claim that the model has identified exact
+joint mechanics, muscle activation, force, or skill quality.
+
+\FloatBarrier
 
 # Task 1.2 - Temporal-Scale Analysis
 
 ## Answer to Task 1.2
 
-The saved padded XROCKET representation relies primarily on long-duration
-patterns. With kernel length 9, the available dilations map to receptive-field
-spans of 9, 17, 25, 33, 41, and 49 samples. Long spans, defined as 41 and 49
-samples in the 56-sample padded window, contributed mean normalized importance
-0.655. Intermediate spans contributed 0.224, and short spans contributed 0.122.
-The leading dilation was 6, corresponding to a 49-sample receptive field.
+My answer is that the model relies mainly on long-duration movement structure,
+not only on short impulses. With kernel length 9, the XROCKET dilations map to
+spans of 9, 17, 25, 33, 41, and 49 samples. The long spans, 41 and 49 samples in
+the padded 56-sample window, account for mean normalized importance 0.655. The
+intermediate spans account for 0.224, and the short spans account for 0.122.
+The single strongest dilation is 6, which corresponds to a 49-sample receptive
+field.
 
-![Task 1.2 dilation importance. Dilation 6 is the strongest contributor in the
-saved padded XROCKET representation.](figures/task_1_2_dilation_importance.pdf)
+Figure 4 combines the dilation and scale evidence. The left panel shows that
+dilation 6 is much higher than the shorter dilations. The right panel simplifies
+the same result into short, intermediate, and long bins: the long-scale bin
+dominates. This supports the idea that XROCKET is recognizing the overall shape
+of the block, not just a quick spike at one instant.
 
-![Task 1.2 temporal-scale contribution. Long spans dominate the normalized
-importance profile.](figures/task_1_2_temporal_scale_contribution.pdf)
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.96\textwidth]{reports/figures/task_1_2_scale_evidence.pdf}
+\caption{Task 1.2 scale evidence. Dilation 6 and the long temporal-scale bin dominate the saved padded XROCKET representation.}
+\end{figure}
 
-Approximate seconds are reported only as a nominal conversion. The KSAS app
-requested Android `SENSOR_DELAY_GAME`, treated here as approximately 50 Hz, but
-the CSV exports do not retain event timestamps. Android sensor delays are
-requests rather than guaranteed exact acquisition intervals [@android_sensors].
-Therefore, the primary temporal evidence is in samples: 41 and 49 samples, not
-verified physical seconds.
+I keep the time interpretation in samples first. The KSAS app requested Android
+`SENSOR_DELAY_GAME`, which I treat as about 50 Hz only for rough context, but
+the exported CSV files do not contain timestamps. Android sensor delays are also
+requests rather than guaranteed exact sampling intervals [@android_sensors].
+For that reason, the strong evidence is "41 and 49 samples", not a verified
+number of physical seconds.
 
-![Task 1.2 class-specific temporal-scale profiles. Most classes show long-scale
-dominance, with class 4 closest to mixed evidence.](figures/task_1_2_class_specific_scale_profiles.pdf)
+Figure 5 adds two checks. The left panel shows that most classes have their
+highest importance in the long-scale column. The right panel shows that the
+dilation ranking is stable across folds, so the long-scale conclusion is not
+coming from one unusual split.
 
-![Task 1.2 fold stability. The long-scale conclusion is stable at the main
-scale-bin level.](figures/task_1_2_fold_stability.pdf)
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.96\textwidth]{reports/figures/task_1_2_class_and_stability.pdf}
+\caption{Task 1.2 class and stability checks. Most classes rely most on long spans, and dilation-rank correlations stay high across folds.}
+\end{figure}
 
-The result suggests that recognition depends more on broad movement structure
-than on very local impulses. This is plausible for karate blocking gestures,
-where the full arm trajectory and orientation transition may distinguish
-classes. The caveat is important: XROCKET has no valid-timestep mask, so the
-temporal explanation describes the padded representation. Padding diagnostics
-showed prediction and feature sensitivity, so a mask-aware or timestamped
-representation would be needed before making stronger time-domain claims.
+My interpretation is that these karate blocks are distinguished by broad arm
+trajectory and orientation changes. That fits the assignment question because
+the temporal scale affects what the model can see: short spans would emphasize
+brief impacts or local changes, while long spans capture a larger part of the
+movement. The main caveat is padding. XROCKET does not use the valid-timestep
+mask, and padding diagnostics showed that padding can affect some predictions
+and features. A timestamped or mask-aware version would be needed before making
+stronger claims about real physical timing.
+
+\FloatBarrier
 
 # Task 1.3 - Discriminative-Pattern Interpretation
 
 ## Answer to Task 1.3
 
-The most discriminative XROCKET patterns can be mapped to representative signal
-intervals, but the localization is approximate. The selected features are PPV
-features: each transformed value is the proportion of convolution responses
-above a learned threshold. The interval shown in each case is therefore the
-strongest representative above-threshold segment, not a unique causal instant.
+My answer is that the selected XROCKET patterns are meaningful as cautious
+sensor-coordinate explanations. They show broad movement shape, orientation
+change, and acceleration structure. They do not prove a biomechanical cause, and
+they are not enough to build a coaching or performance-scoring system by
+themselves.
 
-The selected stable features were mostly long-span patterns at dilation 5 or 6.
-The first cases involved `lin_accel_y`, `gravity_z`, and `lin_accel_z`, with
-associated movement labels upward block and hammering inward block. Two cases
-were labeled plausible from a human perspective, and two were labeled ambiguous.
+The important detail is how PPV features work. A PPV feature is the proportion
+of convolution responses above a learned threshold. So the highlighted interval
+in each case is the strongest representative interval for that pattern, not a
+single exact moment that caused the prediction. Most selected patterns are
+long-span patterns at dilation 5 or 6. The clearest examples involve
+`lin_accel_y`, `gravity_z`, and `lin_accel_z`, mainly for upward block and
+hammering inward block.
 
-![Task 1.3 pattern case 1. Representative correct case for a high-importance
-PPV feature.](figures/task_1_3_pattern_case_01.pdf)
+Figures 6 and 7 show the four pattern cases as compact cards. Each case card has
+the raw same-family sensor traces on top, the XROCKET response under it, and a
+compact metrics strip below. The orange bands show the representative interval
+used for interpretation. Figure 6 contains the plausible upward-block examples;
+Figure 7 keeps the ambiguous and failure cases visible so the explanation limits
+are not hidden.
 
-![Task 1.3 pattern case 2. A second correctly classified representative pattern
-case.](figures/task_1_3_pattern_case_02.pdf)
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.96\textwidth]{reports/figures/task_1_3_case_cards_plausible.pdf}
+\caption{Task 1.3 plausible pattern case cards. Correct upward-block examples show long-span linear acceleration and gravity patterns used by XROCKET.}
+\end{figure}
 
-![Task 1.3 pattern case 3. A correctly classified case with more ambiguous human
-meaning.](figures/task_1_3_pattern_case_03.pdf)
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.96\textwidth]{reports/figures/task_1_3_case_cards_ambiguous.pdf}
+\caption{Task 1.3 ambiguous and failure-pattern checks. These cases keep the interpretation limits visible, especially when padding or misclassification affects the pattern.}
+\end{figure}
+\FloatBarrier
 
-![Task 1.3 failure or ambiguous case. Retaining this case makes the explanation
-limits visible.](figures/task_1_3_pattern_case_failure_or_ambiguous.pdf)
+Figure 8 checks whether the selected features separate classes in the held-out
+data and summarizes the four case studies. The boxplots support the selected
+patterns, but they still do not prove causation. The summary table makes the
+mixed result explicit: two cases are plausible and two are ambiguous. I treat
+that as useful because explainability should also show where the model evidence
+is hard to interpret.
 
-![Task 1.3 feature distributions. Class separation supports the selected
-patterns but does not prove causation.](figures/task_1_3_pattern_feature_distributions.pdf)
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.96\textwidth]{reports/figures/task_1_3_distribution_summary.pdf}
+\caption{Task 1.3 distribution and case summary. Feature distributions support the selected cases, while the table keeps the human-meaningfulness labels explicit.}
+\end{figure}
 
-![Task 1.3 pattern summary table. Human-meaningfulness labels are cautious
-report aids, not expert biomechanical validation.](figures/task_1_3_pattern_summary_table.pdf)
+My final interpretation is that XROCKET can help a human reviewer see which
+parts of the sensor signal the model is using. That could support a future
+human-in-the-loop learning tool, because an instructor or researcher could
+inspect highlighted regions instead of only seeing a class label. However, this
+project does not validate coaching feedback, expertise assessment, force
+estimation, or learning gains. Those would require extra ground truth and
+separate evaluation.
 
-The patterns appear meaningful as sensor-coordinate evidence of broad movement
-shape, orientation change, and acceleration structure. They could support a
-future human-in-the-loop review workflow by highlighting signal regions used by
-the model. They do not validate a coaching system, performance scoring,
-expertise assessment, force estimate, or learning-gain claim.
+\FloatBarrier
 
 # Robustness, Confounds, And Problems Encountered
 
-M7 controls found no unresolved evidence of participant leakage or obvious label
-leakage. Label-shuffle controls stayed low: the strongest mean macro F1 was
+In the leakage checks, I did not find signs that the reported
+results were being driven by participant leakage or simple label leakage.
+Label-shuffle controls stayed low: the strongest mean macro F1 was
 0.1605 and the maximum fold/seed macro F1 was 0.3151. Metadata-only controls
 using sequence length, padding fraction, and arm code also stayed low, with the
 strongest mean macro F1 0.2158.
@@ -234,9 +293,7 @@ The main problems encountered were:
   order had to be aligned with saved feature columns;
 - channel-level rankings were less stable than family, axis, and temporal-scale
   rankings;
-- labels 2 and 3 were the weakest classes and are mutually confused;
-- Quarto was not installed locally, so the final report uses Pandoc with
-  MiKTeX/pdflatex instead of a Quarto pipeline.
+- labels 2 and 3 were the weakest classes and are mutually confused.
 
 # Limitations And Threats To Validity
 
@@ -258,7 +315,7 @@ as validated biomechanics.
 
 # Reproducibility And Repository
 
-Repository URL: <https://github.com/Forest904/ksas-xrocket-hmc.git>
+Repository URL: [https://github.com/Forest904/ksas-xrocket-hmc.git](https://github.com/Forest904/ksas-xrocket-hmc.git)
 
 Submission identifier: Git tag `v1.0-submission` on branch `main`.
 
@@ -286,16 +343,10 @@ provided for academic assignment review, raw KSAS data are excluded, and
 XROCKET is attributed as pinned course-authorized upstream software without a
 public upstream license file.
 
-# Generative-AI Disclosure
+# Generative-AI disclosure
 
-This Generative-AI disclosure covers retained repository, software, and report
-work. Codex was used between 9 June and 9 July 2026 to support repository
-planning, software implementation, debugging, test design, documentation
-updates, report planning, and language editing. Generated code and prose
-retained in the project were reviewed, executed, tested, and revised by the
-author. Raw participant data, secrets, and personally identifying information
-were not supplied to generative-AI tools. The author retained responsibility for
-final decisions, interpretation, verification, and submission.
+I used Codex to support software setup, debugging, tests, report drafting, and
+language editing. I reviewed and verified the retained code, results, and text.
 
 # Conclusion
 
